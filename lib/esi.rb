@@ -1,6 +1,7 @@
-require "esi/version"
+require "oauth2"
 
 module Esi
+  autoload :Version, 'esi/version'
   autoload :OAuth, 'esi/o_auth'
   autoload :Calls, 'esi/calls'
   autoload :Client, 'esi/client'
