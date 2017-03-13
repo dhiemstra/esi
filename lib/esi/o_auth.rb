@@ -1,5 +1,10 @@
 module Esi
   class OAuth
+    extend Forwardable
+
+    attr_reader :access_token, :refresh_token, :expires_at
+    def_delegators :token, :request, :get, :post, :delete, :patch, :put
+
     SCOPES = %w(
       esi-assets.read_assets.v1
       esi-bookmarks.read_character_bookmarks.v1
@@ -26,10 +31,8 @@ module Esi
     )
 
     class << self
-      def authorize_url(account_id=nil)
-        account = account_id ? Account.find(account_id) : Account.default
-        callback = config.eve_callback + "?account_id=#{account_id}"
-        client.auth_code.authorize_url(scope: SCOPES.join(' '), redirect_uri: callback)
+      def authorize_url(redirect_uri:, scopes: SCOPES)
+        client.auth_code.authorize_url(scope: scopes.join(' '), redirect_uri: redirect_uri)
       end
 
       def obtain_token(code)
@@ -38,19 +41,11 @@ module Esi
 
       def client
         @client ||= OAuth2::Client.new(
-          config.eve_client_id, config.eve_secret_key,
-          { site: 'https://login.eveonline.com/oauth/authorize' }
+          Esi.config.client_id, Esi.config.client_secret,
+          { site: Esi.config.api_host }
         )
       end
-
-      def config
-        @config ||= OpenStruct.new(YAML::load_file(Rails.root.join('config', 'eve.yml'))[Rails.env])
-      end
     end
-
-    attr_reader :access_token, :refresh_token, :expires_at
-
-    delegate :request, :get, :post, :delete, :patch, :put, to: :token
 
     def initialize(access_token:, refresh_token:, expires_at:, callback: nil)
       if callback && !callback.respond_to?(:call)

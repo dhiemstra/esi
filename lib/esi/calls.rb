@@ -3,11 +3,12 @@ module Esi
     class Base
       attr_accessor :path, :params
 
+      def method
+        @method ||= :get
+      end
+
       def url
-        url = [Client::API_HOST, path].join
-        url += "/" unless url.ends_with?('/')
-        url += "?#{params.to_query}" if params
-        url
+        Esi.generate_url(path, params)
       end
 
       def page=(page)
@@ -17,6 +18,14 @@ module Esi
 
       def paginated?
         !!@paginated
+      end
+    end
+
+    class OpenMarketDetails < Base
+      def initialize(type_id)
+        @path = "/ui/openwindow/marketdetails"
+        @method = :post
+        @params = { type_id: type_id }
       end
     end
 

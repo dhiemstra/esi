@@ -22,20 +22,38 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    esi = Esi::Client.new(token: 'YOUR_TOKEN', refresh_token: 'REFRESH_TOKEN', token_expires_at: EXPIRE_TIMESTAMP)
+    esi.character()
 
-## Development
+### You can optionally specify a callback that will be executed after a new token has been received using the refresh token
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+    esi.refresh_callback = ~> (token, expires_at) {
+      # save new token & expires at
+    }
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Authentication
 
-## Contributing
+Register your application on [https://developers.eveonline.com/applications].
+Add your client id and secret in an initializer or so.
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/esi.
+    Esi.config.client_id = 'APP_CLIENT_ID'
+    Esi.config.client_secret = 'APP_CLIENT_SECRET'
 
+## Configuration
 
-## License
+Create a file `config/initializers/esi.rb` with the following options:
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+    # Specify a custom log level
+    Esi.config.log_level = :debug
 
+    # Specify a custom log path
+    Esi.config.log_target = Rails.root.join('log', 'esi.log')
+
+    # Specify a custom logger
+    Esi.config.logger = Rails.logger
+
+    # Set esi api version to dev
+    Esi.config.api_version = :dev
+
+    # Save all responses in this folder
+    Esi.config.response_log_path = Rails.root.join('tmp', 'esi')

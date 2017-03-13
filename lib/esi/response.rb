@@ -1,13 +1,13 @@
 module Esi
   class Response
-    attr_reader :original_response, :json, :items, :pages, :total, :next
+    extend Forwardable
 
-    delegate :status, :body, :headers, to: :original_response
+    attr_reader :original_response, :data
+    def_delegators :original_response, :status, :body, :headers
 
     def initialize(response)
       @original_response = response
-      @json = MultiJson.load(body, symbolize_keys: true) rescue {}
-      @items = json
+      @data = MultiJson.load(body, symbolize_keys: true) rescue {}
     end
 
     def to_s
