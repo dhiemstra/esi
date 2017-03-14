@@ -42,7 +42,7 @@ module Esi
       def client
         @client ||= OAuth2::Client.new(
           Esi.config.client_id, Esi.config.client_secret,
-          { site: Esi.config.api_host }
+          { site: Esi.config.oauth_host }
         )
       end
     end
