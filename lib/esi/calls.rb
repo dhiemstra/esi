@@ -29,15 +29,27 @@ module Esi
       end
     end
 
+    class Characters < Base
+      def initialize
+        @path = "/characters/names"
+      end
+    end
+
     class Character < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}"
       end
     end
 
+    class Alliances < Base
+      def initialize
+        @path = "/alliances"
+      end
+    end
+
     class Structures < Base
       def initialize
-        @path = "/universe/structures/"
+        @path = "/universe/structures"
       end
     end
 
