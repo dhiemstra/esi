@@ -75,6 +75,10 @@ module Esi
           response = oauth.send(call.method, url)
         rescue OAuth2::Error => e
           case e.response.status
+          when 502 # Temporary server error
+            logger.error "TemporaryServerError, sleeping for 15 seconds"
+            sleep 15
+            next
           when 503 # Rate Limit
             logger.error "RateLimit error, sleeping for 15 seconds"
             sleep 15

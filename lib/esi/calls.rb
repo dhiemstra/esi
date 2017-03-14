@@ -35,13 +35,6 @@ module Esi
       end
     end
 
-    class Regions < Base
-      def initialize(region_id=nil)
-        raise 'NOT IMPLEMENTED YET'
-        @path = "/regions/#{region_id}"
-      end
-    end
-
     class Structures < Base
       def initialize
         @path = "/universe/structures/"
@@ -75,6 +68,20 @@ module Esi
       def initialize(type_id:, region_id: Region::FORGE)
         @path = "/markets/#{region_id}/history"
         @params = { type_id: type_id }
+      end
+    end
+
+    class KillMails
+      def initialize(character_id:, max_count: 50, max_kill_id: nil)
+        @path = "/characters/#{character_id}/killmails/recent"
+        @params = { max_count: max_count }
+        @params[:max_kill_id] = max_kill_id if max_kill_id
+      end
+    end
+
+    class KillMail
+      def initialize(id:, hash:)
+        @path = "killmails/#{id}/#{hash}"
       end
     end
   end
