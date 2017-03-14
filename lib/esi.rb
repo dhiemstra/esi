@@ -29,7 +29,7 @@ module Esi
     end
 
     def logger
-      @logger ||= config.logger || Logger.new(log_target).tap do |l|
+      @logger ||= config.logger || Logger.new(config.log_target).tap do |l|
         l.level = Logger.const_get(config.log_level.upcase)
       end
     end
