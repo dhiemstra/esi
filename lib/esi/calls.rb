@@ -84,7 +84,7 @@ module Esi
       end
     end
 
-    class KillMails
+    class Killmails < Base
       def initialize(character_id:, max_count: 50, max_kill_id: nil)
         @path = "/characters/#{character_id}/killmails/recent"
         @params = { max_count: max_count }
@@ -92,7 +92,7 @@ module Esi
       end
     end
 
-    class KillMail
+    class Killmail < Base
       def initialize(id:, hash:)
         @path = "killmails/#{id}/#{hash}"
       end
