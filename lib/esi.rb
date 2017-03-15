@@ -4,12 +4,12 @@ require "ostruct"
 require "addressable/uri"
 
 module Esi
-  autoload :Version, 'esi/version'
+  autoload :Version,     'esi/version'
   autoload :AccessToken, 'esi/access_token'
-  autoload :OAuth, 'esi/o_auth'
-  autoload :Calls, 'esi/calls'
-  autoload :Client, 'esi/client'
-  autoload :Response, 'esi/response'
+  autoload :OAuth,       'esi/o_auth'
+  autoload :Calls,       'esi/calls'
+  autoload :Client,      'esi/client'
+  autoload :Response,    'esi/response'
 
   DEFAULT_CONFIG = {
     oauth_host: 'https://login.eveonline.com',
@@ -39,15 +39,15 @@ module Esi
       @api_version || :latest
     end
 
-    # def generate_url(path, params={})
-    #   path = path[1..-1] if path.start_with?('/')
-    #   path += "/" unless path.end_with?('/')
-    #
-    #   url = [config.api_host, config.api_version, path].join('/')
-    #   uri = Addressable::URI.parse(url)
-    #   uri.query_values = params if params
-    #   uri.to_s
-    # end
+    def generate_url(path, params={})
+      path = path[1..-1] if path.start_with?('/')
+      path += "/" unless path.end_with?('/')
+
+      url = [config.api_host, config.api_version, path].join('/')
+      uri = Addressable::URI.parse(url)
+      uri.query_values = params if params
+      uri.to_s
+    end
   end
 
   class ApiError < OAuth2::Error

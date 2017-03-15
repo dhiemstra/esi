@@ -1,21 +1,15 @@
 module Esi
   class Calls
     class Base
-      attr_accessor :params
+      attr_accessor :path, :params
 
       def method
         @method ||= :get
       end
 
-      def path
-        path = @path
-        path = path[1..-1] if path.start_with?('/')
-        path += "/" unless path.end_with?('/')
-        path
+      def url
+        Esi.generate_url(path, params)
       end
-      # def url
-      #   Esi.generate_url(path, params)
-      # end
 
       def page=(page)
         self.params ||= {}
@@ -36,8 +30,9 @@ module Esi
     end
 
     class Characters < Base
-      def initialize
+      def initialize(character_ids)
         @path = "/characters/names"
+        @params = { character_ids: character_ids.join(',') }
       end
     end
 

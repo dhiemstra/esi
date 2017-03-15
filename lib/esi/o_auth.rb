@@ -36,8 +36,7 @@ module Esi
       end
 
       def obtain_token(code)
-        token = client.auth_code.get_token(code)
-        token.becomes(Esi::AccessToken)
+        Esi::AccessToken.from_token(client.auth_code.get_token(code))
       end
 
       def client

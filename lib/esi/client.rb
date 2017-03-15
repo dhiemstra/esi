@@ -13,11 +13,11 @@ module Esi
     end
 
     def method_missing(name, *args, &block)
-      name = name.to_s.split('_').map(&:capitalize).join
+      class_name = name.to_s.split('_').map(&:capitalize).join
       begin
-        klass = Esi::Calls.const_get(name)
+        klass = Esi::Calls.const_get(class_name)
       rescue NameError
-        super
+        super(name, *args, &block)
       end
 
       call = klass.new(*args)
@@ -64,16 +64,15 @@ module Esi
       items
     end
 
-    def request(call, path=nil, params={}, &block)
+    def request(call, url=nil, &block)
       response = nil
-      path ||= call.path
-      params = call.params.merge(params)
+      url ||= call.url
 
-      debug "Starting request: #{path} - #{params.to_json}"
+      debug "Starting request: #{url}"
 
       1.upto(MAX_ATTEMPTS) do |try|
         begin
-          response = oauth.send(call.method, path, { params: params })
+          response = oauth.request(call.method, url)
         rescue OAuth2::Error => e
           case e.response.status
           when 502 # Temporary server error
