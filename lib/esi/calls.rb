@@ -1,15 +1,21 @@
 module Esi
   class Calls
     class Base
-      attr_accessor :path, :params
+      attr_accessor :params
 
       def method
         @method ||= :get
       end
 
-      def url
-        Esi.generate_url(path, params)
+      def path
+        path = @path
+        path = path[1..-1] if path.start_with?('/')
+        path += "/" unless path.end_with?('/')
+        path
       end
+      # def url
+      #   Esi.generate_url(path, params)
+      # end
 
       def page=(page)
         self.params ||= {}

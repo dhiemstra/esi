@@ -5,6 +5,7 @@ require "addressable/uri"
 
 module Esi
   autoload :Version, 'esi/version'
+  autoload :AccessToken, 'esi/access_token'
   autoload :OAuth, 'esi/o_auth'
   autoload :Calls, 'esi/calls'
   autoload :Client, 'esi/client'
@@ -29,8 +30,8 @@ module Esi
     end
 
     def logger
-      @logger ||= config.logger || Logger.new(config.log_target).tap do |l|
-        l.level = Logger.const_get(config.log_level.upcase)
+      @logger ||= Esi.config.logger || Logger.new(Esi.config.log_target).tap do |l|
+        l.level = Logger.const_get(Esi.config.log_level.upcase)
       end
     end
 
@@ -38,15 +39,15 @@ module Esi
       @api_version || :latest
     end
 
-    def generate_url(path, params={})
-      path = path[1..-1] if path.start_with?('/')
-      path += "/" unless path.end_with?('/')
-
-      url = [config.api_host, config.api_version, path].join('/')
-      uri = Addressable::URI.parse(url)
-      uri.query_values = params if params
-      uri.to_s
-    end
+    # def generate_url(path, params={})
+    #   path = path[1..-1] if path.start_with?('/')
+    #   path += "/" unless path.end_with?('/')
+    #
+    #   url = [config.api_host, config.api_version, path].join('/')
+    #   uri = Addressable::URI.parse(url)
+    #   uri.query_values = params if params
+    #   uri.to_s
+    # end
   end
 
   class ApiError < OAuth2::Error
@@ -56,9 +57,9 @@ module Esi
       super(response.original_response)
 
       @code = response.original_response.status
-      @key = response.json[:key]
-      @message = response.json[:message]
-      @type = response.json[:exceptionType]
+      @key = response.data[:key]
+      @message = response.data[:message]
+      @type = response.data[:exceptionType]
     end
   end
 

@@ -36,7 +36,8 @@ module Esi
       end
 
       def obtain_token(code)
-        client.auth_code.get_token(code)
+        token = client.auth_code.get_token(code)
+        token.becomes(Esi::AccessToken)
       end
 
       def client
@@ -61,7 +62,7 @@ module Esi
     private
 
     def token
-      @token = OAuth2::AccessToken.new(OAuth.client, @access_token, {
+      @token = Esi::AccessToken.new(OAuth.client, @access_token, {
         refresh_token: @refresh_token, expires_at: @expires_at
       })
       refresh_access_token if @token.expired?

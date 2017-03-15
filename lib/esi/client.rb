@@ -2,14 +2,14 @@ module Esi
   class Client
     MAX_ATTEMPTS = 5
 
-    attr_accessor :refresh_callback
-    attr_reader :logger, :oauth, :access_token, :refresh_token, :expires_at
+    attr_accessor :refresh_callback, :access_token, :refresh_token, :expires_at
+    attr_reader :logger, :oauth
 
-    def initialize(token: nil, refresh_token: nil, token_expires_at: nil)
+    def initialize(token: nil, refresh_token: nil, expires_at: nil)
       @logger = Esi.logger
       @token = token
       @refresh_token = refresh_token
-      @token_expires_at = token_expires_at
+      @expires_at = expires_at
     end
 
     def method_missing(name, *args, &block)
@@ -38,10 +38,10 @@ module Esi
       @oauth ||= OAuth.new(
         access_token: @token,
         refresh_token: @refresh_token,
-        expires_at: @token_expires_at,
+        expires_at: @expires_at,
         callback: -> (token, expires_at) {
           @token = token
-          @token_expires_at = expires_at
+          @expires_at = expires_at
           if refresh_callback.respond_to?(:call)
             refresh_callback.call(token, expires_at)
           end
@@ -64,15 +64,16 @@ module Esi
       items
     end
 
-    def request(call, url=nil, &block)
+    def request(call, path=nil, params={}, &block)
       response = nil
-      url ||= call.url
+      path ||= call.path
+      params = call.params.merge(params)
 
-      debug "Starting request: #{url}"
+      debug "Starting request: #{path} - #{params.to_json}"
 
       1.upto(MAX_ATTEMPTS) do |try|
         begin
-          response = oauth.send(call.method, url)
+          response = oauth.send(call.method, path, { params: params })
         rescue OAuth2::Error => e
           case e.response.status
           when 502 # Temporary server error
