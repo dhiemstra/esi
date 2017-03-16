@@ -1,14 +1,26 @@
+require 'recursive-open-struct'
+
 module Esi
   class Response
     extend Forwardable
 
-    attr_reader :original_response, :data
+    attr_reader :original_response, :json
     def_delegators :original_response, :status, :body, :headers
 
     def initialize(response)
       @original_response = response
-      @data = MultiJson.load(body, symbolize_keys: true) rescue {}
-      @data = normalize_keys(@data) if @data.is_a?(Hash)
+      @json = MultiJson.load(body, symbolize_keys: true) rescue {}
+      @json = normalize_keys(@json) if @json.is_a?(Hash)
+    end
+
+    def data
+      @data ||= begin
+        if @json.is_a?(Array)
+          @json.map { |e| RecursiveOpenStruct.new(e, recurse_over_arrays: true) }
+        else
+          RecursiveOpenStruct.new(@json, recurse_over_arrays: true)
+        end
+      end
     end
 
     def to_s
