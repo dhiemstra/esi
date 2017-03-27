@@ -49,8 +49,9 @@ module Esi
     end
 
     class AllianceNames < Base
-      def initialize
+      def initialize(alliance_ids)
         @path = "/alliances/names"
+        @params = { alliance_ids: alliance_ids.join(',') }
       end
     end
 
@@ -61,8 +62,9 @@ module Esi
     end
 
     class CorporationNames < Base
-      def initialize
+      def initialize(corporation_ids)
         @path = "/corporations/names"
+        @params = { corporation_ids: corporation_ids.join(',') }
       end
     end
 
