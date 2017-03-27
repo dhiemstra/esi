@@ -48,6 +48,30 @@ module Esi
       end
     end
 
+    class AllianceNames < Base
+      def initialize
+        @path = "/alliances/names"
+      end
+    end
+
+    class Alliance < Base
+      def initialize(alliance_id)
+        @path = "/alliances/#{alliance_id}"
+      end
+    end
+
+    class CorporationNames < Base
+      def initialize
+        @path = "/corporations/names"
+      end
+    end
+
+    class Corporation < Base
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}"
+      end
+    end
+
     class Structures < Base
       def initialize
         @path = "/universe/structures"
