@@ -42,6 +42,13 @@ module Esi
       end
     end
 
+    class CharacterNames < Base
+      def initialize(character_ids)
+        @path = "/characters/names"
+        @params = { character_ids: character_ids.join(',') }
+      end
+    end
+
     class Alliances < Base
       def initialize
         @path = "/alliances"
