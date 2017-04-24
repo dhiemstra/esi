@@ -27,6 +27,14 @@ module Esi
       MultiJson.dump(json, pretty: true)
     end
 
+    def method_missing(method, *args, &block)
+      begin
+        data.send(method, *args, &block)
+      rescue NameError
+        super(name, *args, &block)
+      end
+    end
+
     private
 
     def normalize_keys(data)

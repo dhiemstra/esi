@@ -102,7 +102,7 @@ module Esi
 
       if Esi.config.response_log_path && Dir.exists?(Esi.config.response_log_path)
         call_name = call.class.to_s.downcase.split('::').last
-        folder = Dirname.new(Esi.config.response_log_path).join(call_name)
+        folder = Pathname.new(Esi.config.response_log_path).join(call_name)
         FileUtils.mkdir_p(folder)
         File.write(folder.join("#{Time.now.to_i.to_s}.json"), response.to_s)
       end
