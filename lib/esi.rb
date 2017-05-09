@@ -58,7 +58,7 @@ module Esi
 
       @code = response.original_response.status
       @key = response.data[:key]
-      @message = response.data[:message]
+      @message = response.data[:message].presence || response.data[:error]
       @type = response.data[:exceptionType]
     end
   end
