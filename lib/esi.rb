@@ -12,6 +12,7 @@ module Esi
   autoload :Response,    'esi/response'
 
   DEFAULT_CONFIG = {
+    datasource: :tranquility,
     oauth_host: 'https://login.eveonline.com',
     api_host: 'https://esi.tech.ccp.is',
     api_version: :latest,
@@ -45,7 +46,7 @@ module Esi
 
       url = [config.api_host, config.api_version, path].join('/')
       uri = Addressable::URI.parse(url)
-      uri.query_values = params if params
+      uri.query_values = {datasource: config.datasource}.merge(params.to_h)
       uri.to_s
     end
   end
