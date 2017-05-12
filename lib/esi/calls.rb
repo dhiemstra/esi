@@ -1,33 +1,25 @@
 module Esi
-  class Calls
-    class Base
-      attr_accessor :path, :params
+  module Calls
+    autoload :Base, 'esi/calls/base'
+    autoload :Namespace, 'esi/calls/namespace'
+    autoload :Ui, 'esi/calls/ui'
+    autoload :Universe, 'esi/calls/universe'
 
-      def method
-        @method ||= :get
-      end
-
-      def url
-        Esi.generate_url(path, params)
-      end
-
-      def page=(page)
-        self.params ||= {}
-        self.params[:page] = page
-      end
-
-      def paginated?
-        !!@paginated
-      end
-    end
-
-    class OpenMarketDetails < Base
-      def initialize(type_id)
-        @path = "/ui/openwindow/marketdetails"
-        @method = :post
-        @params = { type_id: type_id }
-      end
-    end
+    # class Namespace
+    #   def self.method_missing(name, *args, &block)
+    #     class_name = name.to_s.split('_').map(&:capitalize).join
+    #     puts "Namespace called for #{name}"
+    #     puts "const_get: #{const_defined?(class_name)}"
+    #
+    #     if const_defined?(class_name)
+    #       klass = const_get(class_name)
+    #       call = klass.new(*args)
+    #       call.paginated? ? request_paginated(call, &block) : request(call, &block)
+    #     else
+    #       super
+    #     end
+    #   end
+    # end
 
     class Characters < Base
       def initialize(character_ids)
@@ -43,13 +35,27 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/latest/#!/Character/get_characters_character_id
+    # Cache: 1 hour
     class Character < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}"
       end
     end
 
+    # Link: https://esi.tech.ccp.is/latest/#!/Wallet/get_characters_character_id_wallets
+    # Scope: esi-wallet.read_character_wallet.v1
+    # Cache: 2 minutes
     class CharacterWallets < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/wallets"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/latest/#!/Character/get_characters_character_id_blueprints
+    # Scope: esi-characters.read_blueprints.v1
+    # Cache: 1 hour
+    class CharacterBlueprints < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}/wallets"
       end
@@ -84,18 +90,6 @@ module Esi
     class Corporation < Base
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}"
-      end
-    end
-
-    class Structures < Base
-      def initialize
-        @path = "/universe/structures"
-      end
-    end
-
-    class Structure < Base
-      def initialize(structure_id)
-        @path = "/universe/structures/#{structure_id}"
       end
     end
 

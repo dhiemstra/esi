@@ -21,10 +21,13 @@ module Esi
       esi-mail.read_mail.v1
       esi-mail.send_mail.v1
       esi-markets.structure_markets.v1
+      esi-markets.read_character_orders.v1
+      esi-industry.read_character_jobs.v1
       esi-search.search_structures.v1
       esi-universe.read_structures.v1
       esi-ui.open_window.v1
       esi-ui.write_waypoint.v1
+      esi-characters.read_blueprints.v1
       esi-corporations.read_corporation_membership.v1
       esi-corporations.read_structures.v1
       esi-corporations.write_structures.v1

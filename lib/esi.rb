@@ -40,6 +40,10 @@ module Esi
       @api_version || :latest
     end
 
+    def classify(word)
+      word.to_s.split('_').map(&:capitalize).join
+    end
+
     def generate_url(path, params={})
       path = path[1..-1] if path.start_with?('/')
       path += "/" unless path.end_with?('/')
@@ -59,7 +63,7 @@ module Esi
 
       @code = response.original_response.status
       @key = response.data[:key]
-      @message = response.data[:message].presence || response.data[:error]
+      @message = response.data[:message] && response.data[:message].presence ? response.data[:message] : response.data[:error]
       @type = response.data[:exceptionType]
     end
   end

@@ -1,6 +1,7 @@
 module Esi
   class Client
     MAX_ATTEMPTS = 5
+    NAMESPACES = Esi::Calls.constants
 
     attr_accessor :refresh_callback, :access_token, :refresh_token, :expires_at
     attr_reader :logger, :oauth
@@ -13,15 +14,13 @@ module Esi
     end
 
     def method_missing(name, *args, &block)
-      class_name = name.to_s.split('_').map(&:capitalize).join
+      klass = nil
       begin
-        klass = Esi::Calls.const_get(class_name)
+        klass = Esi::Calls.const_get(Esi.classify(name).to_sym)
       rescue NameError
         super(name, *args, &block)
       end
-
-      call = klass.new(*args)
-      call.paginated? ? request_paginated(call, &block) : request(call, &block)
+      klass.new(self)
     end
 
     def log(message)
@@ -30,6 +29,10 @@ module Esi
 
     def debug(message)
       logger.debug message
+    end
+
+    def execute(call, &block)
+      call.paginated? ? request_paginated(call, &block) : request(call, &block)
     end
 
     private
