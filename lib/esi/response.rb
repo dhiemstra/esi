@@ -28,11 +28,7 @@ module Esi
     end
 
     def cached_until
-      headers['expires'] ? Time.parse(headers['expires']) : nil
-    end
-
-    def last_modified
-      headers['last-modified'] ? Time.parse(headers['last-modified']) : nil
+      original_response.headers[:expires] ? Time.parse(original_response.headers[:expires]) : nil
     end
 
     def method_missing(method, *args, &block)
