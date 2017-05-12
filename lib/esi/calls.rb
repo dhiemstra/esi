@@ -36,16 +36,22 @@ module Esi
       end
     end
 
+    class CharacterNames < Base
+      def initialize(character_ids)
+        @path = "/characters/names"
+        @params = { character_ids: character_ids.join(',') }
+      end
+    end
+
     class Character < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}"
       end
     end
 
-    class CharacterNames < Base
-      def initialize(character_ids)
-        @path = "/characters/names"
-        @params = { character_ids: character_ids.join(',') }
+    class CharacterWallets < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/wallets"
       end
     end
 
