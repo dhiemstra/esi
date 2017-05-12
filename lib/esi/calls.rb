@@ -1,5 +1,5 @@
 module Esi
-  class Calls
+  module Calls
     class Base
       attr_accessor :path, :params
 
@@ -21,14 +21,6 @@ module Esi
       end
     end
 
-    class OpenMarketDetails < Base
-      def initialize(type_id)
-        @path = "/ui/openwindow/marketdetails"
-        @method = :post
-        @params = { type_id: type_id }
-      end
-    end
-
     class Characters < Base
       def initialize(character_ids)
         @path = "/characters/names"
@@ -43,15 +35,48 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/latest/#!/Character/get_characters_character_id
+    # Cache: 1 hour
     class Character < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}"
       end
     end
 
+    # Link: https://esi.tech.ccp.is/latest/#!/Wallet/get_characters_character_id_wallets
+    # Scope: esi-wallet.read_character_wallet.v1
+    # Cache: 2 minutes
     class CharacterWallets < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}/wallets"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/latest/#!/Character/get_characters_character_id_blueprints
+    # Scope: esi-characters.read_blueprints.v1
+    # Cache: 1 hour
+    class CharacterBlueprints < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/blueprints"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/latest/#!/Market/get_characters_character_id_orders
+    # Scope: esi-markets.read_character_orders.v1
+    # Cache: 1 hour
+    class CharacterOrders < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/orders"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/latest/#!/Industry/get_characters_character_id_industry_jobs
+    # Scope: esi-industry.read_character_jobs.v1
+    # Cache: 5 minutes
+    class CharacterIndustryJobs < Base
+      def initialize(character_id, with_completed: false)
+        @path = "/characters/#{character_id}/industry/jobs"
+        @params = { with_completed: with_completed }
       end
     end
 
@@ -84,18 +109,6 @@ module Esi
     class Corporation < Base
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}"
-      end
-    end
-
-    class Structures < Base
-      def initialize
-        @path = "/universe/structures"
-      end
-    end
-
-    class Structure < Base
-      def initialize(structure_id)
-        @path = "/universe/structures/#{structure_id}"
       end
     end
 
