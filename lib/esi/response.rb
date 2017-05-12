@@ -27,6 +27,10 @@ module Esi
       MultiJson.dump(json, pretty: true)
     end
 
+    def cached_until
+      original_response.headers[:expires] ? Time.parse(original_response.headers[:expires]) : nil
+    end
+
     def method_missing(method, *args, &block)
       begin
         data.send(method, *args, &block)
