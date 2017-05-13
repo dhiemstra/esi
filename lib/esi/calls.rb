@@ -1,5 +1,5 @@
 module Esi
-  module Calls
+  class Calls
     class Base
       attr_accessor :path, :params
 
