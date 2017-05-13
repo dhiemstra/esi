@@ -21,7 +21,7 @@ module Esi
       end
     end
 
-    class OpenMarketDetails < Baase
+    class OpenMarketDetails < Base
       def initialize(type_id)
         @path = "/ui/openwindow/marketdetails"
         @method = :post
