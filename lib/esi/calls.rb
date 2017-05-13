@@ -21,6 +21,14 @@ module Esi
       end
     end
 
+    class OpenMarketDetails < Baase
+      def initialize(type_id)
+        @path = "/ui/openwindow/marketdetails"
+        @method = :post
+        @params = { type_id: type_id }
+      end
+    end
+
     class Characters < Base
       def initialize(character_ids)
         @path = "/characters/names"
@@ -109,6 +117,18 @@ module Esi
     class Corporation < Base
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}"
+      end
+    end
+
+    class Structures < Base
+      def initialize
+        @path = "/universe/structures"
+      end
+    end
+
+    class Structure < Base
+      def initialize(structure_id)
+        @path = "/universe/structures/#{structure_id}"
       end
     end
 
