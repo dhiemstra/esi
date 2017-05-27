@@ -132,6 +132,12 @@ module Esi
       end
     end
 
+    class Route < Base
+      def initialize(origin_id, destination_id)
+        @path = "/route/#{origin_id}/#{destination_id}"
+      end
+    end
+
     class MarketOrders < Base
       def initialize(type_id: nil, structure_id: nil, region_id: Region::FORGE)
         @path = "/markets/structures/#{structure_id}"
