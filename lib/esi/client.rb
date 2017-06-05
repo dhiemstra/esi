@@ -90,8 +90,15 @@ module Esi
           when 404 # Not Found
             raise Esi::ApiNotFoundError.new(Response.new(e.response))
           else
-            logger.error "ApiUnknownError (#{e.response.status}): #{url}"
-            raise Esi::ApiUnknownError.new(Response.new(e.response))
+            response = Response.new(e.response)
+            logger.error "ApiUnknownError (#{response.status}): #{url}"
+
+            case response.error
+            when 'invalid_client' then
+              raise ApiInvalidAppClientKeysError.new(response)
+            else
+              raise Esi::ApiUnknownError.new(response)
+            end
           end
         end
         break if response
