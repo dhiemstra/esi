@@ -199,5 +199,11 @@ module Esi
         @path = "fleets/#{fleet_id}/wings"
       end
     end
+
+    class Fittings < Base
+      def initialize(character_id)
+        @path = "characters/#{character_id}/fittings"
+      end
+    end
   end
 end
