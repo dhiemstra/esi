@@ -7,7 +7,7 @@ module Esi
 
     class << self
       def authorize_url(redirect_uri:, scopes: nil)
-        scopes ||= EveBuddy.config.scopes
+        scopes ||= Esi.config.scopes
         client.auth_code.authorize_url(scope: scopes.join(' '), redirect_uri: redirect_uri)
       end
 
