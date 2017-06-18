@@ -88,6 +88,15 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/dev/?datasource=tranquility#!/Contacts/get_characters_character_id_contacts
+    # Scope: ?
+    # Cache: 5 minutes
+    class CharacterContracts < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/contracts"
+      end
+    end
+
     class Alliances < Base
       def initialize
         @path = "/alliances"
@@ -117,6 +126,18 @@ module Esi
     class Corporation < Base
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}"
+      end
+    end
+
+    class CorporationStructures < Base
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/structures"
+      end
+    end
+
+    class CorporationStructure < Base
+      def initialize(corporation_id, structure_id)
+        @path = "/corporations/#{corporation_id}/structures/#{structure_id}"
       end
     end
 
