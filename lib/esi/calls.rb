@@ -89,8 +89,8 @@ module Esi
     end
 
     # Link: https://esi.tech.ccp.is/dev/?datasource=tranquility#!/Contacts/get_characters_character_id_contacts
-    # Scope: ?
-    # Cache: 5 minutes
+    # Scope: esi-contracts.read_character_contracts.v1
+    # Cache: 1 hour
     class CharacterContracts < Base
       def initialize(character_id)
         @path = "/characters/#{character_id}/contracts"

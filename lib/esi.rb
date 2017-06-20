@@ -14,6 +14,7 @@ module Esi
   SCOPES = %w(
     esi-assets.read_assets.v1
     esi-bookmarks.read_character_bookmarks.v1
+    esi-contracts.read_character_contracts.v1
     esi-clones.read_clones.v1
     esi-skills.read_skillqueue.v1
     esi-skills.read_skills.v1
