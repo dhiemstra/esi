@@ -22,7 +22,6 @@ module Esi
     esi-skills.read_skills.v1
     esi-skills.read_skillqueue.v1
     esi-wallet.read_character_wallet.v1
-    esi-search.search_structures.v1
     esi-clones.read_clones.v1
     esi-characters.read_contacts.v1
     esi-universe.read_structures.v1
