@@ -16,7 +16,7 @@ module Esi
     def data
       @data ||= begin
         if @json.is_a?(Array)
-          @json.map { |e| RecursiveOpenStruct.new(e, recurse_over_arrays: true) }
+          @json[0].is_a?(Hash) ? @json.map { |e| RecursiveOpenStruct.new(e, recurse_over_arrays: true) } : @json
         else
           RecursiveOpenStruct.new(@json, recurse_over_arrays: true)
         end
