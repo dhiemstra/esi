@@ -36,8 +36,8 @@ module Esi
     end
 
     class Search < Base
-      def initialize(categories:, search:, strict: false)
-        @path = "/search"
+      def initialize(character_id: nil, categories:, search:, strict: false)
+        @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
         @params = { categories: categories, search: search, strict: strict }
       end
     end
