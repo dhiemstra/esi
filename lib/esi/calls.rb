@@ -29,6 +29,19 @@ module Esi
       end
     end
 
+    def SolarSystem < Base
+      def initialize(system_id)
+        @path = "/universe/systems/#{system_id}"
+      end
+    end
+
+    def Search < Base
+      def initialize(categories:, search:, strict: false)
+        @path = "/search"
+        @params = { categories: categories, search: search, strict: strict }
+      end
+    end
+
     class Characters < Base
       def initialize(character_ids)
         @path = "/characters/names"
