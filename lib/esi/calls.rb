@@ -97,6 +97,15 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/dev/#!/Location/get_characters_character_id_location
+    # Scope: esi-location.read_location.v1
+    # Cache: 5 seconds
+    class CharacterLocation < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/location"
+      end
+    end
+
     class Alliances < Base
       def initialize
         @path = "/alliances"
