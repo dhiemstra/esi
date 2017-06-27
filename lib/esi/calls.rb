@@ -193,9 +193,9 @@ module Esi
     # Link: https://esi.tech.ccp.is/dev/#!/Corporation/get_corporations_corporation_id_roles
     # Scope: esi-corporations.read_corporation_membership.v1
     # Cache: 1 hour
-    class CorporationMembers < Base
+    class CorporationRoles < Base
       def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}/members"
+        @path = "/corporations/#{corporation_id}/roles"
       end
     end
 
