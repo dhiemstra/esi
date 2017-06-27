@@ -110,6 +110,15 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/dev/#!/Contracts/get_characters_character_id_contracts_contract_id_items
+    # Scope: esi-contracts.read_character_contracts.v1
+    # Cache: 1 hour
+    class ContractItems < Base
+      def initialize(character_id, contract_id)
+        @path = "/characters/#{character_id}/contracts/#{contract_id}/items"
+      end
+    end
+
     # Link: https://esi.tech.ccp.is/dev/#!/Location/get_characters_character_id_location
     # Scope: esi-location.read_location.v1
     # Cache: 5 seconds
