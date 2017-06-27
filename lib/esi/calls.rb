@@ -110,6 +110,15 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/dev/#!/Location/get_characters_character_id_location
+    # Scope: esi-location.read_location.v1
+    # Cache: 1 hour
+    class CharacterLocation < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/location"
+      end
+    end
+
     # Link: https://esi.tech.ccp.is/dev/#!/Contracts/get_characters_character_id_contracts_contract_id_items
     # Scope: esi-contracts.read_character_contracts.v1
     # Cache: 1 hour
@@ -169,6 +178,24 @@ module Esi
     class CorporationStructure < Base
       def initialize(corporation_id, structure_id)
         @path = "/corporations/#{corporation_id}/structures/#{structure_id}"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/dev/#!/Corporation/get_corporations_corporation_id_members
+    # Scope: esi-corporations.read_corporation_membership.v1
+    # Cache: 1 hour
+    class CorporationMembers < Base
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/members"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/dev/#!/Corporation/get_corporations_corporation_id_roles
+    # Scope: esi-corporations.read_corporation_membership.v1
+    # Cache: 1 hour
+    class CorporationMembers < Base
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/members"
       end
     end
 
