@@ -64,21 +64,30 @@ module Esi
       end
     end
 
-    # Link: https://esi.tech.ccp.is/latest/#!/Wallet/get_characters_character_id_wallets
+    # Link: https://esi.tech.ccp.is/dev/#!/Wallet/get_characters_character_id_wallet
     # Scope: esi-wallet.read_character_wallet.v1
     # Cache: 2 minutes
-    class CharacterWallets < Base
+    class CharacterWallet < Base
       def initialize(character_id)
-        @path = "/characters/#{character_id}/wallets"
+        @path = "/characters/#{character_id}/wallet"
       end
     end
 
-    # Link: https://esi.tech.ccp.is/latest/#!/Character/get_characters_character_id_blueprints
-    # Scope: esi-characters.read_blueprints.v1
+    # Link: https://esi.tech.ccp.is/dev/#!/Wallet/get_characters_character_id_wallet_journal
+    # Scope: esi-wallet.read_character_wallet.v1
     # Cache: 1 hour
-    class CharacterBlueprints < Base
+    class CharacterWalletJournal < Base
       def initialize(character_id)
-        @path = "/characters/#{character_id}/blueprints"
+        @path = "/characters/#{character_id}/wallet/journal"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/dev/#!/Wallet/get_characters_character_id_wallet_transactions
+    # Scope: esi-wallet.read_character_wallet.v1
+    # Cache: 1 hour
+    class CharacterWalletTransactions < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/wallet/transactions"
       end
     end
 
