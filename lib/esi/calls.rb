@@ -35,6 +35,12 @@ module Esi
       end
     end
 
+    class Types < Base
+      def initialize
+        @path = "/universe/types"
+      end
+    end
+
     class Type < Base
       def initialize(type_id)
         @path = "/universe/types/#{type_id}"
