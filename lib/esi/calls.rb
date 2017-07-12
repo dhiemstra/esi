@@ -35,6 +35,12 @@ module Esi
       end
     end
 
+    class Type < Base
+      def initialize(type_id)
+        @path = "/universe/types/#{type_id}"
+      end
+    end
+
     class Search < Base
       def initialize(character_id: nil, categories:, search:, strict: false)
         @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
