@@ -38,6 +38,7 @@ module Esi
     class Types < Base
       def initialize
         @path = "/universe/types"
+        @paginated = true
       end
     end
 
