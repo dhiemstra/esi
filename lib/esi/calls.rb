@@ -239,6 +239,19 @@ module Esi
       end
     end
 
+    class MarketGroups < Base
+      def initialize
+        @path = "/markets/groups"
+        @paginated = true
+      end
+    end
+
+    class MarketGroup < Base
+      def initialize(id)
+        @path = "/markets/groups/#{id}"
+      end
+    end
+
     class MarketPrices < Base
       def initialize
         @path = "/markets/prices"
