@@ -159,6 +159,15 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/dev/#!/Assets/get_characters_character_id_assets
+    # Scope: esi-assets.read_assets.v1
+    # Cache: 1 hour
+    class Assets < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/assets"
+      end
+    end
+
     class Alliances < Base
       def initialize
         @path = "/alliances"
