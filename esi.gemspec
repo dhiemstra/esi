@@ -14,18 +14,12 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/dhiemstra/esi"
   spec.license       = "MIT"
 
-  # if spec.respond_to?(:metadata)
-  #   spec.metadata['allowed_push_host'] = "http://mygemserver.com"
-  # else
-  #   raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  # end
-
-  spec.files         = %w(.document CONTRIBUTING.md LICENSE.md README.md oauth2.gemspec) + Dir['lib/**/*.rb']
+  spec.files         = %w(LICENSE.txt README.md esi.gemspec) + Dir['lib/**/*.rb']
   spec.require_paths = ["lib"]
 
   spec.add_dependency "oauth2", "~> 1.2"
   spec.add_dependency "addressable", "~> 2.3"
-  spec.add_dependency "recursive-open-struct", "~> 1.0.2"
+  spec.add_dependency "recursive-open-struct", "~> 1"
   spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
