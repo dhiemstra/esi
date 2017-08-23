@@ -27,7 +27,7 @@ Or install it yourself as:
 
 ### You can optionally specify a callback that will be executed after a new token has been received using the refresh token
 
-    esi.refresh_callback = ~> (token, expires_at) {
+    esi.refresh_callback = -> (token, expires_at) {
       # save new token & expires at
     }
 
