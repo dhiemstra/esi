@@ -6,6 +6,7 @@ module Esi
 
     attr_reader :original_response, :json
     def_delegators :original_response, :status, :body, :headers
+    def_delegators :data, :each
 
     def initialize(response)
       @original_response = response
