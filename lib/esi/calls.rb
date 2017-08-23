@@ -159,6 +159,15 @@ module Esi
       end
     end
 
+    # Link: https://esi.tech.ccp.is/latest/#!/Mail/get_characters_character_id_mail
+    # Scope: esi-mail.read_mail.v1
+    # Cache: 1 hour
+    class CharacterMail < Base
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/mail"
+      end
+    end
+
     # Link: https://esi.tech.ccp.is/dev/#!/Assets/get_characters_character_id_assets
     # Scope: esi-assets.read_assets.v1
     # Cache: 1 hour
@@ -200,12 +209,14 @@ module Esi
       end
     end
 
+    # Scope: esi-corporations.read_structures.v1
     class CorporationStructures < Base
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}/structures"
       end
     end
 
+    # Scope: esi-corporations.read_structures.v1
     class CorporationStructure < Base
       def initialize(corporation_id, structure_id)
         @path = "/corporations/#{corporation_id}/structures/#{structure_id}"
@@ -218,6 +229,15 @@ module Esi
     class CorporationMembers < Base
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}/members"
+      end
+    end
+
+    # Link: https://esi.tech.ccp.is/latest/#!/Corporation/get_corporations_corporation_id_membertracking
+    # Scope: esi-corporations.track_members.v1
+    # Cache: 1 hour
+    class CorporationMemberTracking < Base
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/membertracking"
       end
     end
 
