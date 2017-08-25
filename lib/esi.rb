@@ -2,6 +2,7 @@ require "oauth2"
 require "forwardable"
 require "ostruct"
 require "addressable/uri"
+require "rails"
 
 module Esi
   autoload :Version,     'esi/version'

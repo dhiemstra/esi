@@ -1,389 +1,373 @@
 module Esi
-  class Calls
-    class Base
-      class_attribute :scope
-      class_attribute :cache_duration
-      attr_accessor :path, :params
-
-      def method
-        @method ||= :get
-      end
-
-      def url
-        Esi.generate_url(path, params)
-      end
-
-      def page=(page)
-        self.params ||= {}
-        self.params[:page] = page
-      end
-
-      def paginated?
-        !!@paginated
-      end
-    end
-
-    class SolarSystem < Base
-      def initialize(system_id)
-        @path = "/universe/systems/#{system_id}"
-      end
-    end
-
-    class Types < Base
-      def initialize
-        @path = "/universe/types"
-        @paginated = true
-      end
-    end
-
-    class Type < Base
-      def initialize(type_id)
-        @path = "/universe/types/#{type_id}"
-      end
-    end
-
-    class Search < Base
-      def initialize(character_id: nil, categories:, search:, strict: false)
-        @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
-        @params = { categories: categories, search: search, strict: strict }
-      end
-    end
-
-    class StructureOrders < Base
-      def initialize(structure_id:)
-        @path = "/markets/structures/#{structure_id}"
-        @paginated = true
-      end
-    end
-
-    class MarketHistory < Base
-      def initialize(type_id:, region_id: Region::FORGE)
-        @path = "/markets/#{region_id}/history"
-        @params = { type_id: type_id }
-      end
-    end
-
-    class CharacterNames < Base
-      self.cache_duration = 3600
-
-      def initialize(character_ids)
-        @path = "/characters/names"
-        @params = { character_ids: character_ids.join(',') }
-      end
-    end
-
-    class Character < Base
-      self.cache_duration = 3600
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}"
-      end
-    end
-
-    # Cache: 2 minutes
-    class CharacterWallet < Base
-      self.scope = 'esi-wallet.read_character_wallet.v1'
-      self.cache_duration = 120
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/wallet"
-      end
-    end
-
-    class CharacterWalletJournal < Base
-      self.scope = 'esi-wallet.read_character_wallet.v1'
-      self.cache_duration = 3600
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/wallet/journal"
-      end
-    end
-
-    class CharacterWalletTransactions < Base
-      self.scope = 'esi-wallet.read_character_wallet.v1'
-      self.cache_duration = 3600
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/wallet/transactions"
-      end
-    end
-
-    class CharacterOrders < Base
-      self.scope = 'esi-markets.read_character_orders.v1'
-      self.cache_duration = 3600
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/orders"
-      end
-    end
-
-    class CharacterIndustryJobs < Base
-      self.scope = 'esi-industry.read_character_jobs.v1'
-      self.cache_duration = 300
-
-      def initialize(character_id, with_completed: false)
-        @path = "/characters/#{character_id}/industry/jobs"
-        @params = { with_completed: with_completed }
-      end
-    end
-
-    class CharacterContracts < Base
-      self.scope = 'esi-contracts.read_character_contracts.v1'
-      self.cache_duration = 3600
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/contracts"
-      end
-    end
-
-    class ContractItems < Base
-      self.scope = 'esi-contracts.read_character_contracts.v1'
-      self.cache_duration = 3600
-
-      def initialize(character_id, contract_id)
-        @path = "/characters/#{character_id}/contracts/#{contract_id}/items"
-      end
-    end
-
-    class CharacterLocation < Base
-      self.scope = 'esi-location.read_location.v1'
-      self.cache_duration = 5
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/location"
-      end
-    end
-
-    # characters/{character_id}/online
-    # esi-location.read_online.v1
-    # 60
-
-    # /characters/{character_id}/attributes
-    # esi-skills.read_skills.v1
-    # 3600
-
-    # /characters/{character_id}/chat_channels
-    # esi-characters.read_chat_channels.v1
-    # 300
-
-    # /characters/{character_id}/clones
-    # esi-clones.read_clones.v1
-    # 120
-
-    # /characters/{character_id}/implants
-    # esi-clones.read_implants.v1
-    # 3600
-
-    # /characters/{character_id}/roles
-    # esi-characters.read_corporation_roles.v1
-    # 3600
-
-    class CharacterMail < Base
-      self.scope = 'esi-mail.read_mail.v1'
-      self.cache_duration = 30
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/mail"
-      end
-    end
-
-    class Assets < Base
-      self.scope = 'esi-assets.read_assets.v1'
-      self.cache_duration = 3600
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/assets"
-      end
-    end
-
-    class Alliances < Base
-      self.cache_duration = 3600
-
-      def initialize
-        @path = "/alliances"
-      end
-    end
-
-    class AllianceNames < Base
-      self.cache_duration = 3600
-
-      def initialize(alliance_ids)
-        @path = "/alliances/names"
-        @params = { alliance_ids: alliance_ids.join(',') }
-      end
-    end
-
-    class Alliance < Base
-      self.cache_duration = 3600
-
-      def initialize(alliance_id)
-        @path = "/alliances/#{alliance_id}"
-      end
-    end
-
-    class CorporationNames < Base
-      self.cache_duration = 3600
-
-      def initialize(corporation_ids)
-        @path = "/corporations/names"
-        @params = { corporation_ids: corporation_ids.join(',') }
-      end
-    end
-
-    class Corporation < Base
-      self.cache_duration = 3600
-
-      def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}"
-      end
-    end
-
-    class CorporationStructures < Base
-      self.scope = 'esi-corporations.read_structures.v1'
-      self.cache_duration = 3600
-
-      def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}/structures"
-      end
-    end
-
-    class CorporationMembers < Base
-      self.scope = 'esi-corporations.read_corporation_membership.v1'
-      self.cache_duration = 3600
-
-      def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}/members"
-      end
-    end
-
-    class CorporationMemberTracking < Base
-      self.scope = 'esi-corporations.track_members.v1'
-      self.cache_duration = 3600
-
-      def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}/membertracking"
-      end
-    end
-
-    # Link: https://esi.tech.ccp.is/dev/#!/Corporation/get_corporations_corporation_id_roles
-    class CorporationRoles < Base
-      self.scope = 'esi-corporations.read_corporation_membership.v1'
-      self.cache_duration = 3600
-
-      def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}/roles"
-      end
-    end
-
-    class CorporationWallets < Base
-      self.scope = 'esi-wallet.read_corporation_wallets.v1'
-      self.cache_duration = 300
-    end
-
-    class Structures < Base
-      def initialize
-        @path = "/universe/structures"
-      end
-    end
-
-    class Structure < Base
-      def initialize(structure_id)
-        @path = "/universe/structures/#{structure_id}"
-      end
-    end
-
-    class Route < Base
-      def initialize(origin_id, destination_id)
-        @path = "/route/#{origin_id}/#{destination_id}"
-      end
-    end
-
-    class MarketGroups < Base
-      def initialize
-        @path = "/markets/groups"
-        @paginated = true
-      end
-    end
-
-    class MarketGroup < Base
-      def initialize(id)
-        @path = "/markets/groups/#{id}"
-      end
-    end
-
-    class MarketPrices < Base
-      def initialize
-        @path = "/markets/prices"
-      end
-    end
-
-    class MarketOrders < Base
-      def initialize(type_id: nil, structure_id: nil, region_id: Region::FORGE)
-        @path = "/markets/structures/#{structure_id}"
-        @path = "/markets/#{region_id}/orders"
-        @params = { order_type: :all }
-        @params[:type_id] = type_id if type_id.present?
-        @paginated = type_id.blank?
-      end
-    end
-
-    class Killmails < Base
-      self.scope = 'esi-killmails.read_killmails.v1'
-
-      def initialize(character_id:, max_count: 50, max_kill_id: nil)
-        @path = "/characters/#{character_id}/killmails/recent"
-        @params = { max_count: max_count }
-        @params[:max_kill_id] = max_kill_id if max_kill_id
-      end
-    end
-
-    class Killmail < Base
-      def initialize(id:, hash:)
-        @path = "killmails/#{id}/#{hash}"
-      end
-    end
-
-    class Fleet < Base
-      def initialize(fleet_id)
-        @path = "fleets/#{fleet_id}"
-      end
-    end
-
-    class FleetMembers < Base
-      def initialize(fleet_id)
-        @path = "fleets/#{fleet_id}/members"
-      end
-    end
-
-    class FleetWings < Base
-      def initialize(fleet_id)
-        @path = "fleets/#{fleet_id}/wings"
-      end
-    end
-
-    class Fittings < Base
-      self.scope = 'esi-fittings.read_fittings.v1'
-
-      def initialize(character_id)
-        @path = "characters/#{character_id}/fittings"
-      end
-    end
-
-    class DeleteFitting < Base
-      def initialize(character_id, fitting_id)
-        @path = "characters/#{character_id}/fittings/#{fitting_id}"
-        @method = :delete
-      end
-    end
-
-    class OpenMarketDetails < Base
-      self.scope = 'esi-ui.open_window.v1'
-
-      def initialize(type_id)
-        @path = "/ui/openwindow/marketdetails"
-        @method = :post
-        @params = { type_id: type_id }
-      end
-    end
+  module Calls
+    autoload :Base, 'esi/calls/base'
+    autoload :Namespace, 'esi/calls/namespace'
+    # autoload :Public, 'esi/calls/character'
+    autoload :Character, 'esi/calls/character'
+    # autoload :Corporation, 'esi/calls/corporation'
+
+    # class SolarSystem < Base
+    #   def initialize(system_id)
+    #     @path = "/universe/systems/#{system_id}"
+    #   end
+    # end
+
+    # class Types < Base
+    #   def initialize
+    #     @path = "/universe/types"
+    #     @paginated = true
+    #   end
+    # end
+
+    # class Type < Base
+    #   def initialize(type_id)
+    #     @path = "/universe/types/#{type_id}"
+    #   end
+    # end
+
+    # class Search < Base
+    #   def initialize(character_id: nil, categories:, search:, strict: false)
+    #     @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
+    #     @params = { categories: categories, search: search, strict: strict }
+    #   end
+    # end
+
+    # class StructureOrders < Base
+    #   def initialize(structure_id:)
+    #     @path = "/markets/structures/#{structure_id}"
+    #     @paginated = true
+    #   end
+    # end
+
+    # class Structures < Base
+    #   def initialize
+    #     @path = "/universe/structures"
+    #   end
+    # end
+
+    # class Structure < Base
+    #   def initialize(structure_id)
+    #     @path = "/universe/structures/#{structure_id}"
+    #   end
+    # end
+
+    # class Route < Base
+    #   def initialize(origin_id, destination_id)
+    #     @path = "/route/#{origin_id}/#{destination_id}"
+    #   end
+    # end
+
+    # class MarketGroups < Base
+    #   def initialize
+    #     @path = "/markets/groups"
+    #     @paginated = true
+    #   end
+    # end
+
+    # class MarketGroup < Base
+    #   def initialize(id)
+    #     @path = "/markets/groups/#{id}"
+    #   end
+    # end
+
+    # class MarketPrices < Base
+    #   def initialize
+    #     @path = "/markets/prices"
+    #   end
+    # end
+
+
+    # class MarketHistory < Base
+    #   def initialize(type_id:, region_id: Region::FORGE)
+    #     @path = "/markets/#{region_id}/history"
+    #     @params = { type_id: type_id }
+    #   end
+    # end
+
+    # class CharacterNames < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_ids)
+    #     @path = "/characters/names"
+    #     @params = { character_ids: character_ids.join(',') }
+    #   end
+    # end
+
+    # class Character < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}"
+    #   end
+    # end
+
+    # # Cache: 2 minutes
+    # class CharacterWallet < Base
+    #   self.scope = 'esi-wallet.read_character_wallet.v1'
+    #   self.cache_duration = 120
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/wallet"
+    #   end
+    # end
+
+    # class CharacterWalletJournal < Base
+    #   self.scope = 'esi-wallet.read_character_wallet.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/wallet/journal"
+    #   end
+    # end
+
+    # class CharacterWalletTransactions < Base
+    #   self.scope = 'esi-wallet.read_character_wallet.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/wallet/transactions"
+    #   end
+    # end
+
+    # class CharacterOrders < Base
+    #   self.scope = 'esi-markets.read_character_orders.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/orders"
+    #   end
+    # end
+
+    # class CharacterIndustryJobs < Base
+    #   self.scope = 'esi-industry.read_character_jobs.v1'
+    #   self.cache_duration = 300
+
+    #   def initialize(character_id, with_completed: false)
+    #     @path = "/characters/#{character_id}/industry/jobs"
+    #     @params = { with_completed: with_completed }
+    #   end
+    # end
+
+    # class CharacterContracts < Base
+    #   self.scope = 'esi-contracts.read_character_contracts.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/contracts"
+    #   end
+    # end
+
+    # class ContractItems < Base
+    #   self.scope = 'esi-contracts.read_character_contracts.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id, contract_id)
+    #     @path = "/characters/#{character_id}/contracts/#{contract_id}/items"
+    #   end
+    # end
+
+    # class CharacterLocation < Base
+    #   self.scope = 'esi-location.read_location.v1'
+    #   self.cache_duration = 5
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/location"
+    #   end
+    # end
+
+    # # characters/{character_id}/online
+    # # esi-location.read_online.v1
+    # # 60
+
+    # # /characters/{character_id}/attributes
+    # # esi-skills.read_skills.v1
+    # # 3600
+
+    # # /characters/{character_id}/chat_channels
+    # # esi-characters.read_chat_channels.v1
+    # # 300
+
+    # # /characters/{character_id}/clones
+    # # esi-clones.read_clones.v1
+    # # 120
+
+    # # /characters/{character_id}/implants
+    # # esi-clones.read_implants.v1
+    # # 3600
+
+    # # /characters/{character_id}/roles
+    # # esi-characters.read_corporation_roles.v1
+    # # 3600
+
+    # class CharacterMail < Base
+    #   self.scope = 'esi-mail.read_mail.v1'
+    #   self.cache_duration = 30
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/mail"
+    #   end
+    # end
+
+    # class Assets < Base
+    #   self.scope = 'esi-assets.read_assets.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(character_id)
+    #     @path = "/characters/#{character_id}/assets"
+    #   end
+    # end
+
+    # class Alliances < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize
+    #     @path = "/alliances"
+    #   end
+    # end
+
+    # class AllianceNames < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize(alliance_ids)
+    #     @path = "/alliances/names"
+    #     @params = { alliance_ids: alliance_ids.join(',') }
+    #   end
+    # end
+
+    # class Alliance < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize(alliance_id)
+    #     @path = "/alliances/#{alliance_id}"
+    #   end
+    # end
+
+    # class CorporationNames < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize(corporation_ids)
+    #     @path = "/corporations/names"
+    #     @params = { corporation_ids: corporation_ids.join(',') }
+    #   end
+    # end
+
+    # class Corporation < Base
+    #   self.cache_duration = 3600
+
+    #   def initialize(corporation_id)
+    #     @path = "/corporations/#{corporation_id}"
+    #   end
+    # end
+
+    # class CorporationStructures < Base
+    #   self.scope = 'esi-corporations.read_structures.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(corporation_id)
+    #     @path = "/corporations/#{corporation_id}/structures"
+    #   end
+    # end
+
+    # class CorporationMembers < Base
+    #   self.scope = 'esi-corporations.read_corporation_membership.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(corporation_id)
+    #     @path = "/corporations/#{corporation_id}/members"
+    #   end
+    # end
+
+    # class CorporationMemberTracking < Base
+    #   self.scope = 'esi-corporations.track_members.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(corporation_id)
+    #     @path = "/corporations/#{corporation_id}/membertracking"
+    #   end
+    # end
+
+    # # Link: https://esi.tech.ccp.is/dev/#!/Corporation/get_corporations_corporation_id_roles
+    # class CorporationRoles < Base
+    #   self.scope = 'esi-corporations.read_corporation_membership.v1'
+    #   self.cache_duration = 3600
+
+    #   def initialize(corporation_id)
+    #     @path = "/corporations/#{corporation_id}/roles"
+    #   end
+    # end
+
+    # class CorporationWallets < Base
+    #   self.scope = 'esi-wallet.read_corporation_wallets.v1'
+    #   self.cache_duration = 300
+    # end
+
+    # class MarketOrders < Base
+    #   def initialize(type_id: nil, structure_id: nil, region_id: Region::FORGE)
+    #     @path = "/markets/structures/#{structure_id}"
+    #     @path = "/markets/#{region_id}/orders"
+    #     @params = { order_type: :all }
+    #     @params[:type_id] = type_id if type_id.present?
+    #     @paginated = type_id.blank?
+    #   end
+    # end
+
+    # class Killmails < Base
+    #   self.scope = 'esi-killmails.read_killmails.v1'
+
+    #   def initialize(character_id:, max_count: 50, max_kill_id: nil)
+    #     @path = "/characters/#{character_id}/killmails/recent"
+    #     @params = { max_count: max_count }
+    #     @params[:max_kill_id] = max_kill_id if max_kill_id
+    #   end
+    # end
+
+    # class Killmail < Base
+    #   def initialize(id:, hash:)
+    #     @path = "killmails/#{id}/#{hash}"
+    #   end
+    # end
+
+    # class Fleet < Base
+    #   def initialize(fleet_id)
+    #     @path = "fleets/#{fleet_id}"
+    #   end
+    # end
+
+    # class FleetMembers < Base
+    #   def initialize(fleet_id)
+    #     @path = "fleets/#{fleet_id}/members"
+    #   end
+    # end
+
+    # class FleetWings < Base
+    #   def initialize(fleet_id)
+    #     @path = "fleets/#{fleet_id}/wings"
+    #   end
+    # end
+
+    # class Fittings < Base
+    #   self.scope = 'esi-fittings.read_fittings.v1'
+
+    #   def initialize(character_id)
+    #     @path = "characters/#{character_id}/fittings"
+    #   end
+    # end
+
+    # class DeleteFitting < Base
+    #   def initialize(character_id, fitting_id)
+    #     @path = "characters/#{character_id}/fittings/#{fitting_id}"
+    #     @method = :delete
+    #   end
+    # end
+
+    # class OpenMarketDetails < Base
+    #   self.scope = 'esi-ui.open_window.v1'
+
+    #   def initialize(type_id)
+    #     @path = "/ui/openwindow/marketdetails"
+    #     @method = :post
+    #     @params = { type_id: type_id }
+    #   end
+    # end
   end
 end

@@ -12,16 +12,10 @@ module Esi
       @expires_at = expires_at
     end
 
-    def method_missing(name, *args, &block)
-      class_name = name.to_s.split('_').map(&:capitalize).join
-      begin
-        klass = Esi::Calls.const_get(class_name)
-      rescue NameError
-        super(name, *args, &block)
+    (Esi::Calls.constants - [:Base]).each do |namespace|
+      define_method namespace.to_s.underscore do
+        Esi::Calls.const_get(namespace)
       end
-
-      call = klass.new(*args)
-      call.paginated? ? request_paginated(call, &block) : request(call, &block)
     end
 
     def log(message)
