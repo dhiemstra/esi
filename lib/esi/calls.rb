@@ -2,6 +2,7 @@ module Esi
   class Calls
     class Base
       class_attribute :scope
+      class_attribute :cache_duration
       attr_accessor :path, :params
 
       def method
