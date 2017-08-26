@@ -12,7 +12,9 @@ module Esi
       end
 
       def obtain_token(code)
-        Esi::AccessToken.new(client.auth_code.get_token(code))
+        ActiveSupport::Notifications.instrument('esi.oauth.obtain_token') do
+          Esi::AccessToken.new(client.auth_code.get_token(code))
+        end
       end
 
       def client
@@ -45,10 +47,12 @@ module Esi
     end
 
     def refresh_access_token
-      @token = @token.refresh!
-      @access_token = @token.token
-      @expires_at = @token.expires_at.integer? ? Time.at(@token.expires_at) : @token.expires_at
-      @callback.call(@access_token, @expires_at) if @callback
+      ActiveSupport::Notifications.instrument('esi.oauth.refresh_token') do
+        @token = @token.refresh!
+        @access_token = @token.token
+        @expires_at = @token.expires_at.integer? ? Time.at(@token.expires_at) : @token.expires_at
+        @callback.call(@access_token, @expires_at) if @callback
+      end
     end
   end
 end
