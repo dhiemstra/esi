@@ -238,6 +238,15 @@ module Esi
       end
     end
 
+    class CorporationWallet < Base
+      self.scope = 'esi-wallet.read_corporation_wallet.v1'
+      self.cache_duration = 120
+
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/wallets"
+      end
+    end
+
     class CorporationStructures < Base
       self.scope = 'esi-corporations.read_structures.v1'
       self.cache_duration = 3600
