@@ -71,14 +71,25 @@ module Esi
 
     def request(call, url=nil, &block)
       response = nil
+      last_ex = nil
+
       url ||= call.url
       debug "Starting request: #{url}"
 
       ActiveSupport::Notifications.instrument('esi.client.request') do
         1.upto(MAX_ATTEMPTS) do |try|
+          last_ex = nil
+
           begin
             response = oauth.request(call.method, url)
+          rescue Net::ReadTimeout => e
+            last_ex = e
+            logger.error "ReadTimeout received"
+            sleep 2
+            next
           rescue OAuth2::Error => e
+            last_ex = e
+
             case e.response.status
             when 502 # Temporary server error
               logger.error "TemporaryServerError, sleeping for 15 seconds"
@@ -111,6 +122,11 @@ module Esi
       end
 
       debug "Request finished"
+      if last_ex
+        logger.error "Request failed with #{last_ex.class}"
+        raise ApiRequestError.new(last_ex)
+      end
+
       ActiveSupport::Notifications.instrument('esi.client.response.initialize') do
         response = Response.new(response)
       end

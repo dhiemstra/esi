@@ -67,6 +67,7 @@ module Esi
     log_level: :info,
     log_target: STDOUT,
     response_log_path: nil,
+    timeout: 15,
     client_id: nil,
     client_secret: nil,
     scopes: SCOPES
@@ -105,15 +106,25 @@ module Esi
   end
 
   class ApiError < OAuth2::Error
-    attr_reader :key, :message, :type
+    attr_reader :key, :message, :type, :original_exception
 
-    def initialize(response)
+    def initialize(response, original_exception=nil)
       super(response.original_response)
 
+      @original_exception = original_exception
       @code = response.original_response.status
       @key = response.data[:key]
       @message = response.data[:message].presence || response.data[:error]
       @type = response.data[:exceptionType]
+    end
+  end
+
+  class ApiRequestError < StandardError
+    attr_reader :original_exception
+
+    def initialize(original_exception)
+      @original_exception = original_exception
+      super(original_exception.message)
     end
   end
 

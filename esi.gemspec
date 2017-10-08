@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.files         = %w(LICENSE.txt README.md esi.gemspec) + Dir['lib/**/*.rb']
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "oauth2", "~> 1.2"
+  spec.add_dependency "oauth2", "~> 1.4"
   spec.add_dependency "addressable", "~> 2.3"
   spec.add_dependency "recursive-open-struct", "~> 1"
   spec.add_dependency "activesupport"
