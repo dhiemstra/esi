@@ -72,8 +72,9 @@ module Esi
     def request(call, url=nil, &block)
       response = nil
       last_ex = nil
-
+      options = { timeout: Esi.config.timeout }
       url ||= call.url
+
       debug "Starting request: #{url}"
 
       ActiveSupport::Notifications.instrument('esi.client.request') do
@@ -81,7 +82,7 @@ module Esi
           last_ex = nil
 
           begin
-            response = oauth.request(call.method, url)
+            response = oauth.request(call.method, url, options)
           rescue Net::ReadTimeout => e
             last_ex = e
             logger.error "ReadTimeout received"

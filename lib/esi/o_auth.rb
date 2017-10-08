@@ -21,11 +21,7 @@ module Esi
         @client ||= OAuth2::Client.new(
           Esi.config.client_id, Esi.config.client_secret,
           { site: Esi.config.oauth_host }
-        ) do |conn|
-          conn.adapter :net_http do |http|
-            http.read_timeout = Esi.config.timeout
-          end
-        end
+        )
       end
     end
 
