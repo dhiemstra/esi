@@ -23,9 +23,21 @@ module Esi
       end
     end
 
+    class Regions < Base
+      def initialize
+        @path = "/universe/regions/#{region_id}"
+      end
+    end
+
     class Region < Base
       def initialize(region_id)
         @path = "/universe/regions/#{region_id}"
+      end
+    end
+
+    class Constellations < Base
+      def initialize
+        @path = "/universe/constellations"
       end
     end
 
