@@ -127,6 +127,16 @@ module Esi
       end
     end
 
+    class CorporateIndustryJobs < Base
+      self.scope = 'esi-industry.read_corporation_jobs.v1'
+      self.cache_duration = 300
+
+      def initialize(character_id, with_completed: false)
+        @path = "/corporations/#{character_id}/industry/jobs"
+        @params = { with_completed: with_completed }
+      end
+    end
+
     class CharacterContracts < Base
       self.scope = 'esi-contracts.read_character_contracts.v1'
       self.cache_duration = 3600
