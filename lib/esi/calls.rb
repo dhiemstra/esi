@@ -1,5 +1,11 @@
 module Esi
   class Calls
+    class << self
+      def list
+        constants.select { |c| Esi::Calls.const_get(c).try(:scope) }.map { |c| c.to_s.underscore.to_sym }
+      end
+    end
+
     class Info
       attr_reader :name, :call
       delegate :scope, :cache_duration, to: :call
@@ -7,6 +13,10 @@ module Esi
       def initialize(name)
         @name = name.to_sym
         @call = Calls.const_get(name.to_s.camelize)
+      end
+
+      def to_s
+        @name.to_s
       end
 
       def character?
