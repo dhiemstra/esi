@@ -149,19 +149,37 @@ module Esi
       self.scope = 'esi-industry.read_character_jobs.v1'
       self.cache_duration = 300
 
-      def initialize(character_id, with_completed: false)
+      def initialize(character_id, with_completed: true)
         @path = "/characters/#{character_id}/industry/jobs"
-        @params = { with_completed: with_completed }
+        @params = { include_completed: with_completed }
       end
     end
 
-    class CorporateIndustryJobs < Base
+    class CorporationIndustryJobs < Base
       self.scope = 'esi-industry.read_corporation_jobs.v1'
       self.cache_duration = 300
 
-      def initialize(character_id, with_completed: false)
-        @path = "/corporations/#{character_id}/industry/jobs"
-        @params = { with_completed: with_completed }
+      def initialize(corporation_id, with_completed: true)
+        @path = "/corporations/#{corporation_id}/industry/jobs"
+        @params = { include_completed: with_completed }
+      end
+    end
+
+    class CharacterBlueprints < Base
+      self.scope = 'esi-characters.read_blueprints.v1'
+      self.cache_duration = 3600
+
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/blueprints"
+      end
+    end
+
+    class CorporationBlueprints < Base
+      self.scope = 'esi-corporations.read_blueprints.v1'
+      self.cache_duration = 3600
+
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/blueprints"
       end
     end
 
