@@ -103,7 +103,7 @@ module Esi
     end
 
     class MarketHistory < Base
-      def initialize(type_id:, region_id: Region::FORGE)
+      def initialize(region_id:, type_id:)
         @path = "/markets/#{region_id}/history"
         @params = { type_id: type_id }
       end
@@ -401,8 +401,7 @@ module Esi
     end
 
     class MarketOrders < Base
-      def initialize(type_id: nil, structure_id: nil, region_id: Region::FORGE)
-        @path = "/markets/structures/#{structure_id}"
+      def initialize(region_id:, type_id: nil)
         @path = "/markets/#{region_id}/orders"
         @params = { order_type: :all }
         @params[:type_id] = type_id if type_id.present?
