@@ -1,5 +1,33 @@
 module Esi
   class Calls
+    class << self
+      def list
+        constants.select { |c| Esi::Calls.const_get(c).try(:scope) }.map { |c| c.to_s.underscore.to_sym }
+      end
+    end
+
+    class Info
+      attr_reader :name, :call
+      delegate :scope, :cache_duration, to: :call
+
+      def initialize(name)
+        @name = name.to_sym
+        @call = Calls.const_get(name.to_s.camelize)
+      end
+
+      def to_s
+        @name.to_s
+      end
+
+      def character?
+        name.to_s.starts_with?('character')
+      end
+
+      def corporation?
+        name.to_s.starts_with?('corporat')
+      end
+    end
+
     class Base
       class_attribute :scope
       class_attribute :cache_duration
@@ -66,6 +94,24 @@ module Esi
       end
     end
 
+    class IndustryFacilities < Base
+      self.scope = nil
+      self.cache_duration = 3600
+
+      def initialize
+        @path = "/industry/facilities"
+      end
+    end
+
+    class IndustrySystems < Base
+      self.scope = nil
+      self.cache_duration = 3600
+
+      def initialize
+        @path = "/industry/systems"
+      end
+    end
+
     class Search < Base
       def initialize(character_id: nil, categories:, search:, strict: false)
         @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
@@ -81,7 +127,7 @@ module Esi
     end
 
     class MarketHistory < Base
-      def initialize(type_id:, region_id: Region::FORGE)
+      def initialize(region_id:, type_id:)
         @path = "/markets/#{region_id}/history"
         @params = { type_id: type_id }
       end
@@ -145,9 +191,37 @@ module Esi
       self.scope = 'esi-industry.read_character_jobs.v1'
       self.cache_duration = 300
 
-      def initialize(character_id, with_completed: false)
+      def initialize(character_id, with_completed: true)
         @path = "/characters/#{character_id}/industry/jobs"
-        @params = { with_completed: with_completed }
+        @params = { include_completed: with_completed }
+      end
+    end
+
+    class CorporationIndustryJobs < Base
+      self.scope = 'esi-industry.read_corporation_jobs.v1'
+      self.cache_duration = 300
+
+      def initialize(corporation_id, with_completed: true)
+        @path = "/corporations/#{corporation_id}/industry/jobs"
+        @params = { include_completed: with_completed }
+      end
+    end
+
+    class CharacterBlueprints < Base
+      self.scope = 'esi-characters.read_blueprints.v1'
+      self.cache_duration = 3600
+
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/blueprints"
+      end
+    end
+
+    class CorporationBlueprints < Base
+      self.scope = 'esi-corporations.read_blueprints.v1'
+      self.cache_duration = 3600
+
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/blueprints"
       end
     end
 
@@ -351,8 +425,7 @@ module Esi
     end
 
     class MarketOrders < Base
-      def initialize(type_id: nil, structure_id: nil, region_id: Region::FORGE)
-        @path = "/markets/structures/#{structure_id}"
+      def initialize(region_id:, type_id: nil)
         @path = "/markets/#{region_id}/orders"
         @params = { order_type: :all }
         @params[:type_id] = type_id if type_id.present?

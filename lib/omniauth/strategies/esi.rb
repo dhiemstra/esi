@@ -39,7 +39,7 @@ module OmniAuth
         params = super
         params = params.merge(request.params) unless OmniAuth.config.test_mode
         params[:scope] = params[:scope].join(' ') if params[:scope].is_a?(Array)
-        params[:redirect_uri] = options[:callback_url] unless options[:callback_url].nil?
+        params[:redirect_uri] = callback_url
         params
       end
 
