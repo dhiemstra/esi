@@ -180,6 +180,9 @@ module Esi
       end
     end
 
+    #################################
+    ### IndustryJobs
+    #################################
     class CharacterIndustryJobs < Base
       self.scope = 'esi-industry.read_character_jobs.v1'
       self.cache_duration = 300
@@ -200,6 +203,9 @@ module Esi
       end
     end
 
+    #################################
+    ### Blueprints
+    #################################
     class CharacterBlueprints < Base
       self.scope = 'esi-characters.read_blueprints.v1'
       self.cache_duration = 3600
@@ -218,6 +224,30 @@ module Esi
       end
     end
 
+    #################################
+    ### Assets
+    #################################
+    class CharacterAssets < Base
+      self.scope = 'esi-assets.read_assets.v1'
+      self.cache_duration = 3600
+
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/assets"
+      end
+    end
+
+    class CorporationAssets < Base
+      self.scope = 'esi-assets.read_corporation_assets.v1'
+      self.cache_duration = 3600
+
+      def initialize(corporation_id)
+        @path = "/corporations/#{character_id}/assets"
+      end
+    end
+
+    #################################
+    ### Contracts
+    #################################
     class CharacterContracts < Base
       self.scope = 'esi-contracts.read_character_contracts.v1'
       self.cache_duration = 3600
