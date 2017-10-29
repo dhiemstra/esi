@@ -126,13 +126,6 @@ module Esi
       end
     end
 
-    class MarketHistory < Base
-      def initialize(region_id:, type_id:)
-        @path = "/markets/#{region_id}/history"
-        @params = { type_id: type_id }
-      end
-    end
-
     class CharacterNames < Base
       self.cache_duration = 3600
 
@@ -402,6 +395,23 @@ module Esi
     class Route < Base
       def initialize(origin_id, destination_id)
         @path = "/route/#{origin_id}/#{destination_id}"
+      end
+    end
+
+    class MarketHistory < Base
+      def initialize(region_id:, type_id:)
+        @path = "/markets/#{region_id}/history"
+        @params = { type_id: type_id }
+      end
+    end
+
+    class MarketTypes < Base
+      self.scope = nil
+      self.cache_duration = 600
+
+      def initialize(region_id:)
+        @path = "/markets/#{region_id}/types"
+        @paginated = true
       end
     end
 
