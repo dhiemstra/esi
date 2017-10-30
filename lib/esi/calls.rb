@@ -241,7 +241,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize(corporation_id)
-        @path = "/corporations/#{character_id}/assets"
+        @path = "/corporations/#{corporation_id}/assets"
       end
     end
 
