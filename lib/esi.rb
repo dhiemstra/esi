@@ -67,7 +67,7 @@ module Esi
     log_level: :info,
     log_target: STDOUT,
     response_log_path: nil,
-    timeout: 15,
+    timeout: 60,
     client_id: nil,
     client_secret: nil,
     scopes: SCOPES

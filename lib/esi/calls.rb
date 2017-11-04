@@ -233,6 +233,7 @@ module Esi
 
       def initialize(character_id)
         @path = "/characters/#{character_id}/assets"
+        @paginated = true
       end
     end
 
@@ -242,6 +243,7 @@ module Esi
 
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}/assets"
+        @paginated = true
       end
     end
 
