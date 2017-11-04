@@ -1,6 +1,6 @@
 module Esi
   class Client
-    MAX_ATTEMPTS = 5
+    MAX_ATTEMPTS = 3
 
     attr_accessor :refresh_callback, :access_token, :refresh_token, :expires_at
     attr_reader :logger, :oauth
@@ -82,8 +82,10 @@ module Esi
           last_ex = nil
 
           begin
-            response = oauth.request(call.method, url, options)
-          rescue Net::ReadTimeout => e
+            response = Timeout::timeout(Esi.config.timeout) do
+              oauth.request(call.method, url, options)
+            end
+          rescue Timeout::Error, Net::ReadTimeout => e
             last_ex = e
             logger.error "ReadTimeout received"
             sleep 2
@@ -111,7 +113,7 @@ module Esi
               logger.error "ApiUnknownError (#{response.status}): #{url}"
 
               case response.error
-              when 'invalid_client' then
+              when 'invalid_client'
                 raise ApiInvalidAppClientKeysError.new(response)
               else
                 raise Esi::ApiUnknownError.new(response)
