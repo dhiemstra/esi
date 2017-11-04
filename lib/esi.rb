@@ -124,7 +124,7 @@ module Esi
 
     def initialize(original_exception)
       @original_exception = original_exception
-      super(original_exception.message)
+      super("#{original_exception.class}: #{original_exception.message}")
     end
   end
 
