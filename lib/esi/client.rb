@@ -53,23 +53,30 @@ module Esi
     end
 
     def request_paginated(call, &block)
-      items = []
+      response = nil
       page = 1
 
       ActiveSupport::Notifications.instrument('esi.client.request.paginated') do
         loop do
           call.page = page
-          response = request(call, &block)
-          break if response.data.blank?
-          items += response.data
+          page_response = request(call, &block)
+
+          if page_response.data.blank?
+            break
+          elsif response
+            response.merge(page_response)
+          else
+            response = page_response
+          end
+
           page += 1
         end
       end
 
-      items
+      response
     end
 
-    def request(call, url=nil, &block)
+    def request(call, &block)
       response = nil
       last_ex = nil
       options = { timeout: Esi.config.timeout }
@@ -128,9 +135,9 @@ module Esi
       if last_ex
         logger.error "Request failed with #{last_ex.class}"
         raise ApiRequestError.new(last_ex)
-      else
-        debug "Request successful"
       end
+
+      debug "Request successful"
 
       ActiveSupport::Notifications.instrument('esi.client.response.initialize') do
         response = Response.new(response)

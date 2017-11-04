@@ -4,32 +4,30 @@ module Esi
   class Response
     extend Forwardable
 
-    attr_reader :original_response, :json
+    attr_reader :original_response, :data
     def_delegators :original_response, :status, :body, :headers
     def_delegators :data, :each
 
     def initialize(response)
       @original_response = response
-      @json = MultiJson.load(body, symbolize_keys: true) rescue {}
-      @json = normalize_keys(@json) if @json.is_a?(Hash)
+      @data = normalize_results
     end
 
-    def data
-      @data ||= begin
-        if @json.is_a?(Array)
-          @json[0].is_a?(Hash) ? @json.map { |e| RecursiveOpenStruct.new(e, recurse_over_arrays: true) } : @json
-        else
-          RecursiveOpenStruct.new(@json, recurse_over_arrays: true)
-        end
-      end
+    def merge(other_response)
+      @data += other_response.data
+      self
     end
 
-    def to_s
-      MultiJson.dump(json, pretty: true)
+    def to_json(pretty: true)
+      MultiJson.dump(data, pretty: pretty)
     end
 
     def cached_until
-      original_response.headers[:expires] ? Time.parse(original_response.headers[:expires]) : nil
+      @cached_until ||= headers[:expires] ? Time.parse(headers[:expires]) : nil
+    end
+
+    def response_json
+      @response_json ||= MultiJson.load(body, symbolize_keys: true) rescue {}
     end
 
     def method_missing(method, *args, &block)
@@ -42,9 +40,12 @@ module Esi
 
     private
 
-    def normalize_keys(data)
-      data.dup.each_key { |k| data[underscore(k).to_sym] = data.delete(k) }
-      data
+    def normalize_results
+      response_json.is_a?(Hash) ? normalize_entry(response_json) : response_json.map { |e| normalize_entry(e) }
+    end
+
+    def normalize_entry(entry)
+      entry.is_a?(Hash) ? RecursiveOpenStruct.new(entry.transform_keys { |k| underscore(k).to_sym }, recurse_over_arrays: true) : entry
     end
 
     def underscore(str)
