@@ -85,10 +85,10 @@ module Esi
             response = Timeout::timeout(Esi.config.timeout) do
               oauth.request(call.method, url, options)
             end
-          rescue Timeout::Error, Net::ReadTimeout => e
+          rescue Faraday::SSLError, Timeout::Error, Net::ReadTimeout => e
             last_ex = e
-            logger.error "ReadTimeout received"
-            sleep 2
+            logger.error e.to_s
+            sleep 3
             next
           rescue OAuth2::Error => e
             last_ex = e
@@ -120,14 +120,16 @@ module Esi
               end
             end
           end
+
           break if response
         end
       end
 
-      debug "Request finished"
       if last_ex
         logger.error "Request failed with #{last_ex.class}"
         raise ApiRequestError.new(last_ex)
+      else
+        debug "Request successful"
       end
 
       ActiveSupport::Notifications.instrument('esi.client.response.initialize') do
