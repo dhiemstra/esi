@@ -112,11 +112,11 @@ module Esi
             when 403 # Forbidden
               logger.error "ApiForbiddenError: #{e.response.status}: #{e.response.body}"
               logger.error url
-              raise Esi::ApiForbiddenError.new(Response.new(e.response))
+              raise Esi::ApiForbiddenError.new(Response.new(e.response, call))
             when 404 # Not Found
-              raise Esi::ApiNotFoundError.new(Response.new(e.response))
+              raise Esi::ApiNotFoundError.new(Response.new(e.response, call))
             else
-              response = Response.new(e.response)
+              response = Response.new(e.response, call)
               logger.error "ApiUnknownError (#{response.status}): #{url}"
 
               case response.error
@@ -139,18 +139,11 @@ module Esi
 
       debug "Request successful"
 
-      ActiveSupport::Notifications.instrument('esi.client.response.initialize') do
-        response = Response.new(response)
+      ActiveSupport::Notifications.instrument('esi.client.response.render') do
+        response = Response.new(response, call)
+        response.save
       end
-      ActiveSupport::Notifications.instrument('esi.client.response.save') do
-        if Esi.config.response_log_path && Dir.exists?(Esi.config.response_log_path)
-          call_name = call.class.to_s.downcase.split('::').last
-          folder = Pathname.new(Esi.config.response_log_path).join(call_name)
-          FileUtils.mkdir_p(folder)
-          File.write(folder.join("#{Time.now.to_i.to_s}.json"), response.to_s)
-        end
-      end
-      ActiveSupport::Notifications.instrument('esi.client.response.classify') do
+      ActiveSupport::Notifications.instrument('esi.client.response.callback') do
         response.data.each { |item| block.call(item) } if block
       end
       response
