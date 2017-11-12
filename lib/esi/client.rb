@@ -92,7 +92,7 @@ module Esi
             response = Timeout::timeout(Esi.config.timeout) do
               oauth.request(call.method, url, options)
             end
-          rescue Faraday::SSLError, Timeout::Error, Net::ReadTimeout => e
+          rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error, Net::ReadTimeout => e
             last_ex = e
             logger.error e.to_s
             sleep 3
