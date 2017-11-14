@@ -53,7 +53,7 @@ module Esi
 
     class Regions < Base
       def initialize
-        @path = "/universe/regions/#{region_id}"
+        @path = "/universe/regions"
       end
     end
 
@@ -78,6 +78,12 @@ module Esi
     class SolarSystem < Base
       def initialize(system_id)
         @path = "/universe/systems/#{system_id}"
+      end
+    end
+
+    class SolarSystems < Base
+      def initialize
+        @path = "/universe/systems"
       end
     end
 
