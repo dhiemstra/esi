@@ -5,7 +5,7 @@ module OmniAuth
     class Esi < OmniAuth::Strategies::OAuth2
       option :name, 'esi'
       option :client_options, { site: ::Esi.config.oauth_host, verify_url: '/oauth/verify' }
-      option :authorize_options, [:scope]
+      option :authorize_options, [:scope, :callback_url]
 
       uid { extra_info[:character_id] }
 
@@ -39,7 +39,7 @@ module OmniAuth
         params = super
         params = params.merge(request.params) unless OmniAuth.config.test_mode
         params[:scope] = params[:scope].join(' ') if params[:scope].is_a?(Array)
-        params[:redirect_uri] = callback_url
+        params[:redirect_uri] = params[:callback_url].presence || callback_url
         params
       end
 
