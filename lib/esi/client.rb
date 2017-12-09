@@ -115,13 +115,17 @@ module Esi
               raise Esi::ApiForbiddenError.new(Response.new(e.response, call))
             when 404 # Not Found
               raise Esi::ApiNotFoundError.new(Response.new(e.response, call))
+            when 400 # Bad Request
+              response = Response.new(e.response, call)
+              log_error('ApiBadRequestError', url, response)
+              raise Esi::ApiBadRequestError.new(response)
             else
               response = Response.new(e.response, call)
-              logger.error "ApiUnknownError (#{response.status}): #{url}"
+              log_error('ApiUnknownError', url, response)
 
               case response.error
               when 'invalid_client'
-                raise ApiInvalidAppClientKeysError.new(response)
+                raise Esi::ApiInvalidAppClientKeysError.new(response)
               else
                 raise Esi::ApiUnknownError.new(response)
               end
@@ -134,7 +138,7 @@ module Esi
 
       if last_ex
         logger.error "Request failed with #{last_ex.class}"
-        raise ApiRequestError.new(last_ex)
+        raise Esi::ApiRequestError.new(last_ex)
       end
 
       debug "Request successful"
@@ -147,6 +151,12 @@ module Esi
         response.data.each { |item| block.call(item) } if block
       end
       response
+    end
+
+    def log_error(klass, url, response)
+      logger.error "#{klass}(#{response.status}) @ #{url}"
+      logger.error "ERROR: #{response.body.inspect}"
+      logger.error "BODY: #{response.error.inspect}"
     end
   end
 end

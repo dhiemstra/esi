@@ -106,15 +106,16 @@ module Esi
   end
 
   class ApiError < OAuth2::Error
-    attr_reader :key, :message, :type, :original_exception
+    attr_reader :response, :key, :message, :type, :original_exception
 
     def initialize(response, original_exception=nil)
       super(response.original_response)
 
+      @response = response
       @original_exception = original_exception
       @code = response.original_response.status
       @key = response.data[:key]
-      @message = response.data[:message].presence || response.data[:error]
+      @message = response.data[:message].presence || response.data[:error] || original_exception.message
       @type = response.data[:exceptionType]
     end
   end
@@ -129,6 +130,7 @@ module Esi
   end
 
   class ApiUnknownError < ApiError; end
+  class ApiBadRequestError < ApiError; end
   class ApiInvalidAppClientKeysError < ApiError; end
   class ApiNotFoundError < ApiError; end
   class ApiForbiddenError < ApiError; end
