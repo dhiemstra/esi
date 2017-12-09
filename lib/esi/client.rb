@@ -117,18 +117,16 @@ module Esi
               raise Esi::ApiNotFoundError.new(Response.new(e.response, call))
             when 400 # Bad Request
               response = Response.new(e.response, call)
-              log_error('ApiBadRequestError', url, response)
-              raise Esi::ApiBadRequestError.new(response)
+              if response.error.to_s == 'invalid_client'
+                raise Esi::ApiInvalidAppClientKeysError.new(response)
+              else
+                log_error('ApiBadRequestError', url, response)
+                raise Esi::ApiBadRequestError.new(response)
+              end
             else
               response = Response.new(e.response, call)
               log_error('ApiUnknownError', url, response)
-
-              case response.error
-              when 'invalid_client'
-                raise Esi::ApiInvalidAppClientKeysError.new(response)
-              else
-                raise Esi::ApiUnknownError.new(response)
-              end
+              raise Esi::ApiUnknownError.new(response)
             end
           end
 
