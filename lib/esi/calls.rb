@@ -31,6 +31,7 @@ module Esi
     class Base
       class_attribute :scope
       class_attribute :cache_duration
+
       attr_accessor :path, :params
 
       def method
@@ -150,6 +151,15 @@ module Esi
 
       def initialize(character_id)
         @path = "/characters/#{character_id}/wallet"
+      end
+    end
+
+    class CharacterSkills < Base
+      self.scope = 'esi-skills.read_skills.v1'
+      self.cache_duration = 120
+
+      def initialize(character_id)
+        @path = "/characters/#{character_id}/skills"
       end
     end
 
