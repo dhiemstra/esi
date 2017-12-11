@@ -109,23 +109,28 @@ module Esi
               logger.error "RateLimit error, sleeping for 15 seconds"
               sleep 15
               next
-            when 403 # Forbidden
-              logger.error "ApiForbiddenError: #{e.response.status}: #{e.response.body}"
-              logger.error url
-              raise Esi::ApiForbiddenError.new(Response.new(e.response, call))
             when 404 # Not Found
               raise Esi::ApiNotFoundError.new(Response.new(e.response, call))
+            when 403 # Forbidden
+              response = Response.new(e.response, call)
+              debug_error('ApiForbiddenError', url, e.response)
+              raise Esi::ApiForbiddenError.new(response)
             when 400 # Bad Request
               response = Response.new(e.response, call)
-              if response.error.to_s == 'invalid_client'
+              case response.error
+              when 'invalid_token'
+                debug_error('ApiRefreshTokenExpiredError ', url, response)
+                raise Esi::ApiRefreshTokenExpiredError.new(response)
+              when 'invalid_client'
+                debug_error('ApiInvalidAppClientKeysError', url, response)
                 raise Esi::ApiInvalidAppClientKeysError.new(response)
               else
-                log_error('ApiBadRequestError', url, response)
+                debug_error('ApiBadRequestError', url, response)
                 raise Esi::ApiBadRequestError.new(response)
               end
             else
               response = Response.new(e.response, call)
-              log_error('ApiUnknownError', url, response)
+              debug_error('ApiUnknownError', url, response)
               raise Esi::ApiUnknownError.new(response)
             end
           end
@@ -151,10 +156,8 @@ module Esi
       response
     end
 
-    def log_error(klass, url, response)
-      logger.error "#{klass}(#{response.status}) @ #{url}"
-      logger.error "ERROR: #{response.body.inspect}"
-      logger.error "BODY: #{response.error.inspect}"
+    def debug_error(klass, url, response)
+      logger.error "#{klass}(#{response.error}) status: #{response.status}) - url: #{url}"
     end
   end
 end

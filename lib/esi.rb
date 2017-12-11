@@ -131,6 +131,7 @@ module Esi
 
   class ApiUnknownError < ApiError; end
   class ApiBadRequestError < ApiError; end
+  class ApiRefreshTokenExpiredError < ApiError; end
   class ApiInvalidAppClientKeysError < ApiError; end
   class ApiNotFoundError < ApiError; end
   class ApiForbiddenError < ApiError; end

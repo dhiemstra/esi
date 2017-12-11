@@ -46,17 +46,17 @@ module Esi
     end
 
     def method_missing(method, *args, &block)
-      begin
-        data.send(method, *args, &block)
-      rescue NameError
-        super(name, *args, &block)
-      end
+      data.send(method, *args, &block)
     end
 
     private
 
     def normalize_results
-      response_json.is_a?(Hash) ? normalize_entry(response_json) : response_json.map { |e| normalize_entry(e) }
+      case response_json.class.to_s
+      when 'Hash'  then normalize_entry(response_json)
+      when 'Array' then response_json.map { |e| normalize_entry(e) }
+      else response_json
+      end
     end
 
     def normalize_entry(entry)
