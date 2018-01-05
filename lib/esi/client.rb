@@ -1,6 +1,6 @@
 module Esi
   class Client
-    MAX_ATTEMPTS = 3
+    MAX_ATTEMPTS = 2
 
     attr_accessor :refresh_callback, :access_token, :refresh_token, :expires_at
     attr_reader :logger, :oauth
@@ -76,6 +76,7 @@ module Esi
       response
     end
 
+    # FIXME: esi should not retry
     def request(call, &block)
       response = nil
       last_ex = nil
@@ -99,24 +100,25 @@ module Esi
             next
           rescue OAuth2::Error => e
             last_ex = e
+            response = Response.new(e.response, call)
 
             case e.response.status
             when 502 # Temporary server error
-              logger.error "TemporaryServerError, sleeping for 15 seconds"
-              sleep 15
+              logger.error "TemporaryServerError: #{response.error}"
+              sleep 5
               next
             when 503 # Rate Limit
-              logger.error "RateLimit error, sleeping for 15 seconds"
-              sleep 15
+              logger.error "RateLimit error, sleeping for 5 seconds"
+              sleep 5
               next
             when 404 # Not Found
               raise Esi::ApiNotFoundError.new(Response.new(e.response, call))
             when 403 # Forbidden
-              response = Response.new(e.response, call)
+              # response = Response.new(e.response, call)
               debug_error('ApiForbiddenError', url, e.response)
               raise Esi::ApiForbiddenError.new(response)
             when 400 # Bad Request
-              response = Response.new(e.response, call)
+              # response = Response.new(e.response, call)
               case response.error
               when 'invalid_token'
                 debug_error('ApiRefreshTokenExpiredError ', url, response)
@@ -129,7 +131,7 @@ module Esi
                 raise Esi::ApiBadRequestError.new(response)
               end
             else
-              response = Response.new(e.response, call)
+              # response = Response.new(e.response, call)
               debug_error('ApiUnknownError', url, response)
               raise Esi::ApiUnknownError.new(response)
             end
