@@ -35,7 +35,7 @@ module Esi
       rescue NameError
         return false
       end
-      klass.nil?
+      !klass.nil?
     end
 
     def plural_method?(name)
