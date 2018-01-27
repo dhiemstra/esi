@@ -1,4 +1,4 @@
-require 'active_support/inflector/inflections'
+require 'active_support/core_ext/string'
 
 module Esi
   class Client
@@ -39,7 +39,7 @@ module Esi
     end
 
     def plural_method?(name)
-      plural = pluralize(name.to_s).to_sym
+      plural = name.to_s.pluralize.to_sym
       method? plural
     end
 
