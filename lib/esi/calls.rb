@@ -143,6 +143,30 @@ module Esi
       end
     end
 
+    class DogmaAttributes < Base
+      def initialize
+        @path = "/dogma/attributes/"
+      end
+    end
+
+    class DogmaAttribute < Base
+      def initialize(attribute_id)
+        @path = "/dogma/attributes/#{attribute_id}"
+      end
+    end
+
+    class DogmaEffects < Base
+      def initialize
+        @path = "/dogma/effects/"
+      end
+    end
+
+    class DogmaEffect < Base
+      def initialize(effect_id)
+        @path = "/dogma/effects/#{effect_id}"
+      end
+    end
+
     class IndustryFacilities < Base
       self.scope = nil
       self.cache_duration = 3600
