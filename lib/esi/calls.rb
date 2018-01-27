@@ -54,7 +54,7 @@ module Esi
 
     class Regions < Base
       def initialize
-        @path = "/universe/regions"
+        @path = "/universe/regions/"
       end
     end
 
@@ -66,7 +66,7 @@ module Esi
 
     class Constellations < Base
       def initialize
-        @path = "/universe/constellations"
+        @path = "/universe/constellations/"
       end
     end
 
@@ -84,7 +84,49 @@ module Esi
 
     class SolarSystems < Base
       def initialize
-        @path = "/universe/systems"
+        @path = "/universe/systems/"
+      end
+    end
+
+    class Star < Base
+      def initialize(star_id)
+        @path = "/universe/stars/#{star_id}"
+      end
+    end
+
+    class Planet < Base
+      def initialize(planet_id)
+        @path = "/universe/planets/#{planet_id}"
+      end
+    end
+
+    class Moon < Base
+      def initialize(moon_id)
+        @path = "/universe/moons/#{moon_id}"
+      end
+    end
+
+    class Stargate < Base
+      def initialize(stargate_id)
+        @path = "/universe/stargates/#{stargate_id}"
+      end
+    end
+
+    class Station < Base
+      def initialize(station_id)
+        @path = "/universe/stations/#{station_id}"
+      end
+    end
+
+    class Structures < Base
+      def initialize
+        @path = "/universe/structures/"
+      end
+    end
+
+    class Structure < Base
+      def initialize(structure_id)
+        @path = "universe/structures/#{structure_id}"
       end
     end
 
