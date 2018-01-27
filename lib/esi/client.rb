@@ -1,3 +1,5 @@
+require 'active_support/inflector'
+
 module Esi
   class Client
     MAX_ATTEMPTS = 2
@@ -15,7 +17,7 @@ module Esi
     def method_missing(name, *args, &block)
       klass = nil
       ActiveSupport::Notifications.instrument('esi.client.detect_call') do
-        class_name = name.to_s.split('_').map(&:capitalize).join
+        class_name = method_to_class_name name
         begin
           klass = Esi::Calls.const_get(class_name)
         rescue NameError
@@ -27,6 +29,20 @@ module Esi
       call.paginated? ? request_paginated(call, &block) : request(call, &block)
     end
 
+    def method?(name)
+      begin
+        klass = Esi::Calls.const_get(method_to_class_name(name))
+      rescue NameError
+        return false
+      end
+      klass.nil?
+    end
+
+    def plural_method?(name)
+      plural = pluralize(name.to_s).to_sym
+      method? plural
+    end
+
     def log(message)
       logger.info message
     end
@@ -36,6 +52,10 @@ module Esi
     end
 
     private
+
+    def method_to_class_name(name)
+      name.dup.to_s.split('_').map(&:capitalize).join
+    end
 
     def oauth
       @oauth ||= OAuth.new(
