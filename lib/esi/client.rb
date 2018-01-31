@@ -88,6 +88,7 @@ module Esi
       ActiveSupport::Notifications.instrument('esi.client.request') do
         1.upto(MAX_ATTEMPTS) do |try|
           last_ex = nil
+          response = nil
 
           begin
             response = Timeout::timeout(Esi.config.timeout) do
@@ -112,28 +113,26 @@ module Esi
               sleep 5
               next
             when 404 # Not Found
-              raise Esi::ApiNotFoundError.new(Response.new(e.response, call))
+              raise Esi::ApiNotFoundError.new(Response.new(e.response, call), e)
             when 403 # Forbidden
-              # response = Response.new(e.response, call)
-              debug_error('ApiForbiddenError', url, e.response)
-              raise Esi::ApiForbiddenError.new(response)
+              debug_error('ApiForbiddenError', url, response)
+              raise Esi::ApiForbiddenError.new(response, e)
             when 400 # Bad Request
-              # response = Response.new(e.response, call)
-              case response.error
+              exception = Esi::ApiBadRequestError.new(response, e)
+              case exception.message
               when 'invalid_token'
                 debug_error('ApiRefreshTokenExpiredError ', url, response)
-                raise Esi::ApiRefreshTokenExpiredError.new(response)
+                raise Esi::ApiRefreshTokenExpiredError.new(response, e)
               when 'invalid_client'
                 debug_error('ApiInvalidAppClientKeysError', url, response)
-                raise Esi::ApiInvalidAppClientKeysError.new(response)
+                raise Esi::ApiInvalidAppClientKeysError.new(response, e)
               else
                 debug_error('ApiBadRequestError', url, response)
-                raise Esi::ApiBadRequestError.new(response)
+                raise exception
               end
             else
-              # response = Response.new(e.response, call)
               debug_error('ApiUnknownError', url, response)
-              raise Esi::ApiUnknownError.new(response)
+              raise Esi::ApiUnknownError.new(response, e)
             end
           end
 
@@ -143,6 +142,7 @@ module Esi
 
       if last_ex
         logger.error "Request failed with #{last_ex.class}"
+        debug_error(last_ex.class, url, response)
         raise Esi::ApiRequestError.new(last_ex)
       end
 
@@ -159,7 +159,14 @@ module Esi
     end
 
     def debug_error(klass, url, response)
-      logger.error "#{klass}(#{response.error}) status: #{response.status}) - url: #{url}"
+      [
+        '-'*60,
+        "#{klass}(#{response.error})",
+        "STATUS: #{response.status}",
+        "MESSAGE: #{response.respond_to?(:data) ? (response.data[:message].presence || response.data[:error]) : response.try(:body)}",
+        "URL: #{url}",
+        '-'*60,
+      ].each { |msg| logger.error(msg) }
     end
   end
 end
