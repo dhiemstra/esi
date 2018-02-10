@@ -9,7 +9,7 @@ module Esi
 
     def initialize(token: nil, refresh_token: nil, expires_at: nil)
       @logger = Esi.logger
-      @token = token
+      @access_token = token
       @refresh_token = refresh_token
       @expires_at = expires_at
     end
@@ -59,11 +59,11 @@ module Esi
 
     def oauth
       @oauth ||= OAuth.new(
-        access_token: @token,
+        access_token: @access_token,
         refresh_token: @refresh_token,
         expires_at: @expires_at,
         callback: -> (token, expires_at) {
-          @token = token
+          @access_token = token
           @expires_at = expires_at
           if refresh_callback.respond_to?(:call)
             refresh_callback.call(token, expires_at)
