@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-    esi = Esi::Client.new(token: 'YOUR_TOKEN', refresh_token: 'REFRESH_TOKEN', token_expires_at: EXPIRE_TIMESTAMP)
+    esi = Esi::Client.new(token: 'YOUR_TOKEN', refresh_token: 'REFRESH_TOKEN', expires_at: EXPIRE_TIMESTAMP)
     esi.character()
 
 ### You can optionally specify a callback that will be executed after a new token has been received using the refresh token
