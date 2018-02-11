@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string'
+require 'set'
 
 module Esi
   class Client
@@ -24,9 +25,7 @@ module Esi
           super(name, *args, &block)
         end
       end
-
-      call = klass.new(*args)
-      call.paginated? ? request_paginated(call, &block) : request(call, &block)
+      cached_response(klass, *args, &block)
     end
 
     def method?(name)
@@ -52,6 +51,18 @@ module Esi
     end
 
     private
+
+    def cached_response(klass, *args, &block)
+      call = klass.new(*args)
+      if !Esi.config.cache_disabled
+        cache_key = [klass.name, args].flatten.to_set.hash
+        Esi.cache.fetch(cache_key, expires_in: klass.cache_duration) do
+          call.paginated? ? request_paginated(call, &block) : request(call, &block)
+        end
+      else
+        call.paginated? ? request_paginated(call, &block) : request(call, &block)
+      end
+    end
 
     def method_to_class_name(name)
       name.dup.to_s.split('_').map(&:capitalize).join
