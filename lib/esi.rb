@@ -70,7 +70,7 @@ module Esi
     timeout: 60,
     client_id: nil,
     client_secret: nil,
-    cache: nil
+    cache: nil,
     scopes: SCOPES
   }
 
