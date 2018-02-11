@@ -7,12 +7,19 @@ module Esi
     attr_reader :store
 
     def initialize
-      cache_path = Esi.config.cache_store == :file_store ? (Esi.config.cache_path || ESI_CACHE_PATH) : nil
-      @store = ActiveSupport::Cache.lookup_store(
+      args = [
         Esi.config.cache_store,
         cache_path,
-        namespace: Esi.config.cache_namespace || ESI_CACHE_NAMESPACE
-      )
+        { namespace: Esi.config.cache_namespace || ESI_CACHE_NAMESPACE }
+      ].compact
+      @store = ActiveSupport::Cache.lookup_store(*args)
+    end
+
+    private
+
+    def cache_path
+      return unless Esi.config.cache_store == :file_store
+      Esi.config.cache_path || ESI_CACHE_PATH
     end
   end
 end
