@@ -52,15 +52,16 @@ module Esi
 
     private
 
+    def make_call(call, &block)
+      call.paginated? ? request_paginated(call, &block) : request(call, &block)
+    end
+
     def cached_response(klass, *args, &block)
       call = klass.new(*args)
-      if Esi.cache
-        cache_key = [klass.name, args].flatten.to_set.hash
-        Esi.cache.fetch(cache_key, expires_in: klass.cache_duration) do
-          call.paginated? ? request_paginated(call, &block) : request(call, &block)
-        end
-      else
-        call.paginated? ? request_paginated(call, &block) : request(call, &block)
+      return make_call(call, &block) unless Esi.cache
+      cache_key = [klass.name, args].flatten.to_set.hash
+      Esi.cache.fetch(cache_key, expires_in: klass.cache_duration) do
+        make_call(call, &block)
       end
     end
 
