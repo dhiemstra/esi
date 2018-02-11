@@ -73,6 +73,7 @@ module Esi
     client_secret: nil,
     cache_disabled: false,
     cache_store: :memory_store,
+    cache_path: nil,
     cache_namespace: nil,
     scopes: SCOPES
   }
