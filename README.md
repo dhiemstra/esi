@@ -57,3 +57,6 @@ Create a file `config/initializers/esi.rb` with the following options:
 
     # Save all responses in this folder
     Esi.config.response_log_path = Rails.root.join('tmp', 'esi')
+
+    # Enable Caching
+    Esi.config.cache = Rails.cache

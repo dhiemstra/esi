@@ -11,7 +11,6 @@ module Esi
   autoload :Calls,       'esi/calls'
   autoload :Client,      'esi/client'
   autoload :Response,    'esi/response'
-  autoload :Cache,       'esi/cache'
 
   SCOPES = %w(
     esi-assets.read_assets.v1
@@ -71,10 +70,7 @@ module Esi
     timeout: 60,
     client_id: nil,
     client_secret: nil,
-    cache_disabled: false,
-    cache_store: :memory_store,
-    cache_path: nil,
-    cache_namespace: nil,
+    cache: nil
     scopes: SCOPES
   }
 
@@ -92,7 +88,7 @@ module Esi
     end
 
     def cache
-      Esi::Cache.new.store
+      Esi.config.cache
     end
 
     def api_version
