@@ -186,6 +186,9 @@ module Esi
     end
 
     class Search < Base
+      self.scope = nil
+      # https://esi.tech.ccp.is/latest/characters/907452336/search/?categories=structure&datasource=tranquility&search=Kamela&strict=false&token=Fp3ThF7wjvYBIDIIrtWE_Ryjt9BhYwUP75y2EL5Eq9mHPm8tYt9I9NwgZz8o26FFQBKoUToh2DYVc-Q5Ws400g2
+
       def initialize(character_id: nil, categories:, search:, strict: false)
         @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
         @params = { categories: categories, search: search, strict: strict }
@@ -443,15 +446,6 @@ module Esi
       end
     end
 
-    class CorporationWallet < Base
-      self.scope = 'esi-wallet.read_corporation_wallet.v1'
-      self.cache_duration = 120
-
-      def initialize(corporation_id)
-        @path = "/corporations/#{corporation_id}/wallets"
-      end
-    end
-
     class CorporationStructures < Base
       self.scope = 'esi-corporations.read_structures.v1'
       self.cache_duration = 3600
@@ -486,6 +480,15 @@ module Esi
 
       def initialize(corporation_id)
         @path = "/corporations/#{corporation_id}/roles"
+      end
+    end
+
+    class CorporationWallet < Base
+      self.scope = 'esi-wallet.read_corporation_wallet.v1'
+      self.cache_duration = 120
+
+      def initialize(corporation_id)
+        @path = "/corporations/#{corporation_id}/wallets"
       end
     end
 

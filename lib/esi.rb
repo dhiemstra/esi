@@ -120,7 +120,7 @@ module Esi
       @original_exception = original_exception
       @code = response.original_response.status
       @key = response.data[:key]
-      @message = response.data[:message].presence || response.data[:error] || original_exception.message
+      @message = response.data[:message].presence || response.data[:error] || original_exception.try(:message)
       @type = response.data[:exceptionType]
     end
   end
@@ -130,7 +130,7 @@ module Esi
 
     def initialize(original_exception)
       @original_exception = original_exception
-      super("#{original_exception.class}: #{original_exception.message}")
+      super("#{original_exception.class}: #{original_exception.try(:response).try(:status)} - #{original_exception.try(:message)}")
     end
   end
 
