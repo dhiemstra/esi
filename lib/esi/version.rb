@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
 module Esi
-  VERSION = '0.3.8'
+  # The Esi Version
+  # @return [String] the current gem version
+  VERSION = '0.3.9'
 end
