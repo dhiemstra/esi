@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esi
   class AccessToken < OAuth2::AccessToken
     def initialize(*args)
@@ -11,7 +13,7 @@ module Esi
     end
 
     def verify
-      Esi::Response.new(get("/oauth/verify"))
+      Esi::Response.new(get('/oauth/verify'))
     end
   end
 end

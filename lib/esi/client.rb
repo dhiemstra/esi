@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/string'
 require 'set'
 
@@ -13,6 +15,7 @@ module Esi
       @access_token = token
       @refresh_token = refresh_token
       @expires_at = expires_at
+      @oauth = init_oauth
     end
 
     def method_missing(name, *args, &block)
@@ -69,46 +72,45 @@ module Esi
       name.dup.to_s.split('_').map(&:capitalize).join
     end
 
-    def oauth
+    def init_oauth
       @oauth ||= OAuth.new(
         access_token: @access_token,
         refresh_token: @refresh_token,
         expires_at: @expires_at,
-        callback: -> (token, expires_at) {
+        callback: lambda { |token, expires_at|
           @access_token = token
           @expires_at = expires_at
-          if refresh_callback.respond_to?(:call)
-            refresh_callback.call(token, expires_at)
-          end
+          refresh_callback.call(token, expires_at) if refresh_callback.respond_to?(:call)
         }
       )
     end
 
     def request_paginated(call, &block)
+      call.page = 1
       response = nil
-      page = 1
-
       ActiveSupport::Notifications.instrument('esi.client.request.paginated') do
-        loop do
-          call.page = page
-          page_response = request(call, &block)
-
-          if page_response.data.blank?
-            break
-          elsif response
-            response.merge(page_response)
-          else
-            response = page_response
-          end
-
-          page += 1
-        end
+        response = paginated_response(response, call, &block)
       end
-
       response
     end
 
+    def paginated_response(response, call, &block)
+      loop do
+        page_response = request(call, &block)
+        break response if page_response.data.blank?
+        response = response ? response.merge(page_response) : page_response
+        call.page += 1
+      end
+    end
+
     # FIXME: esi should not retry
+    # FIXME: make rubocop compliant
+    # rubocop:disable Lint/ShadowedException
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/BlockLength
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/PerceivedComplexity
     def request(call, &block)
       response = nil
       last_ex = nil
@@ -118,12 +120,12 @@ module Esi
       debug "Starting request: #{url}"
 
       ActiveSupport::Notifications.instrument('esi.client.request') do
-        1.upto(MAX_ATTEMPTS) do |try|
+        1.upto(MAX_ATTEMPTS) do |_try|
           last_ex = nil
           response = nil
 
           begin
-            response = Timeout::timeout(Esi.config.timeout) do
+            response = Timeout.timeout(Esi.config.timeout) do
               oauth.request(call.method, url, options)
             end
           rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error, Net::ReadTimeout => e
@@ -141,7 +143,7 @@ module Esi
               sleep 5
               next
             when 503 # Rate Limit
-              logger.error "RateLimit error, sleeping for 5 seconds"
+              logger.error 'RateLimit error, sleeping for 5 seconds'
               sleep 5
               next
             when 404 # Not Found
@@ -171,34 +173,44 @@ module Esi
           break if response
         end
       end
+      # rubocop:enable Lint/ShadowedException
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/BlockLength
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/PerceivedComplexity
 
       if last_ex
         logger.error "Request failed with #{last_ex.class}"
         debug_error(last_ex.class, url, response)
-        raise Esi::ApiRequestError.new(last_ex)
+        raise Esi::ApiRequestError, last_ex
       end
 
-      debug "Request successful"
+      debug 'Request successful'
 
       ActiveSupport::Notifications.instrument('esi.client.response.render') do
         response = Response.new(response, call)
         response.save
       end
       ActiveSupport::Notifications.instrument('esi.client.response.callback') do
-        response.data.each { |item| block.call(item) } if block
+        response.data.each { |item| yield(item) } if block
       end
       response
     end
 
     def debug_error(klass, url, response)
       [
-        '-'*60,
+        '-' * 60,
         "#{klass}(#{response.error})",
         "STATUS: #{response.status}",
-        "MESSAGE: #{response.respond_to?(:data) ? (response.data[:message].presence || response.data[:error]) : response.try(:body)}",
+        "MESSAGE: #{debug_message_for_response(response)}",
         "URL: #{url}",
-        '-'*60,
+        '-' * 60
       ].each { |msg| logger.error(msg) }
+    end
+
+    def debug_message_for_response(response)
+      response.respond_to?(:data) ? (response.data[:message].presence || response.data[:error]) : response.try(:body)
     end
   end
 end

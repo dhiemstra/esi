@@ -1,0 +1,22 @@
+AllCops:
+  Exclude:
+    - bin/
+    - pkg/
+  TargetRubyVersion: 2.3
+Metrics/ClassLength:
+  Max: 300
+Metrics/LineLength:
+  Max: 120
+Metrics/ModuleLength:
+  Max: 300
+Style/Documentation:
+  Enabled: false # TODO: renable this after documenting.
+Style/MethodMissing:
+  Enabled: false
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: '()'
+    '%i': '()'
+    '%w': '()'
+Style/SafeNavigation:
+  Enabled: false

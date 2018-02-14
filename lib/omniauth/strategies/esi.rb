@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require 'omniauth/strategies/oauth2'
 
 module OmniAuth
   module Strategies
     class Esi < OmniAuth::Strategies::OAuth2
       option :name, 'esi'
-      option :client_options, { site: ::Esi.config.oauth_host, verify_url: '/oauth/verify' }
-      option :authorize_options, [:scope, :callback_url]
+      option :client_options, site: ::Esi.config.oauth_host, verify_url: '/oauth/verify'
+      option :authorize_options, %i(scope callback_url)
 
       uid { extra_info[:character_id] }
 
@@ -19,11 +21,11 @@ module OmniAuth
       end
 
       credentials do
-        hash = {token: access_token.token}
-        hash.merge!(refresh_token: access_token.refresh_token) if access_token.refresh_token
-        hash.merge!(expires_at: access_token.expires_at) if access_token.expires?
-        hash.merge!(expires: access_token.expires?)
-        hash.merge!(scopes: extra_info[:scopes].split(' ')) if extra_info[:scopes]
+        hash = { token: access_token.token }
+        hash[:refresh_token] = access_token.refresh_token if access_token.refresh_token
+        hash[:expires_at] = access_token.expires_at if access_token.expires?
+        hash[:expires] = access_token.expires?
+        hash[:scopes] = extra_info[:scopes].split(' ') if extra_info[:scopes]
         hash
       end
 
@@ -32,7 +34,9 @@ module OmniAuth
       end
 
       def extra_info
-        @extra_info ||= deep_symbolize(access_token.get(options.client_options.verify_url).parsed.transform_keys!(&:underscore))
+        @extra_info ||= deep_symbolize(
+          access_token.get(options.client_options.verify_url).parsed.transform_keys!(&:underscore)
+        )
       end
 
       def authorize_params

@@ -1,8 +1,10 @@
-require "oauth2"
-require "forwardable"
-require "ostruct"
-require "addressable/uri"
-require "active_support/notifications"
+# frozen_string_literal: true
+
+require 'oauth2'
+require 'forwardable'
+require 'ostruct'
+require 'addressable/uri'
+require 'active_support/notifications'
 
 module Esi
   autoload :VERSION,     'esi/version'
@@ -58,7 +60,7 @@ module Esi
     esi-universe.read_structures.v1
     esi-wallet.read_character_wallet.v1
     esi-wallet.read_corporation_wallets.v1
-  )
+  ).freeze
   DEFAULT_CONFIG = {
     datasource: :tranquility,
     oauth_host: 'https://login.eveonline.com',
@@ -72,7 +74,7 @@ module Esi
     client_secret: nil,
     cache: nil,
     scopes: SCOPES
-  }
+  }.freeze
 
   class << self
     attr_writer :api_version, :logger
@@ -95,25 +97,30 @@ module Esi
       @api_version || :latest
     end
 
-    def generate_url(path, params={})
-      path = path[1..-1] if path.start_with?('/')
-      path += "/" unless path.end_with?('/')
-
-      url = [config.api_host, config.api_version, path].join('/')
+    def generate_url(path, params = {})
+      url = url_for_path(path)
       uri = Addressable::URI.parse(url)
-      uri.query_values = {datasource: config.datasource}.merge(params.to_h)
+      uri.query_values = { datasource: config.datasource }.merge(params.to_h)
       uri.to_s
     end
 
     def client
       @client ||= Client.new
     end
+
+    private
+
+    def url_for_path(path)
+      path = path[1..-1] if path.start_with?('/')
+      path += '/' unless path.end_with?('/')
+      [config.api_host, config.api_version, path].join('/')
+    end
   end
 
   class ApiError < OAuth2::Error
     attr_reader :response, :key, :message, :type, :original_exception
 
-    def initialize(response, original_exception=nil)
+    def initialize(response, original_exception = nil)
       super(response.original_response)
 
       @response = response
@@ -130,7 +137,11 @@ module Esi
 
     def initialize(original_exception)
       @original_exception = original_exception
-      super("#{original_exception.class}: #{original_exception.try(:response).try(:status)} - #{original_exception.try(:message)}")
+      msg = "#{original_exception.class}: " \
+      "#{original_exception.try(:response).try(:status)}" \
+      ' - ' \
+      "#{original_exception.try(:message)}"
+      super(msg)
     end
   end
 
