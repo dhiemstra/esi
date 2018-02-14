@@ -6,6 +6,11 @@ require 'ostruct'
 require 'addressable/uri'
 require 'active_support/notifications'
 
+# The main Esi Module
+# @!attribute [w] api_version
+#  @return [Symbol] the Esi Api version used by the gem
+# @!attribute [w] logger
+#  @return [Logger] the logger class for the gem
 module Esi
   autoload :VERSION,     'esi/version'
   autoload :AccessToken, 'esi/access_token'
@@ -14,6 +19,10 @@ module Esi
   autoload :Client,      'esi/client'
   autoload :Response,    'esi/response'
 
+  require_relative 'esi/api_error'
+
+  # Default ESI access scopes
+  # @return [Array<String>] the default scopes
   SCOPES = %w(
     esi-assets.read_assets.v1
     esi-bookmarks.read_character_bookmarks.v1
@@ -61,6 +70,9 @@ module Esi
     esi-wallet.read_character_wallet.v1
     esi-wallet.read_corporation_wallets.v1
   ).freeze
+
+  # The default Esi gem configuration
+  # @return [Hash{Symbol => Symbol|String|Fixnum|Object|Array}] the default configuration
   DEFAULT_CONFIG = {
     datasource: :tranquility,
     oauth_host: 'https://login.eveonline.com',
@@ -79,24 +91,36 @@ module Esi
   class << self
     attr_writer :api_version, :logger
 
+    # The Esi Configuration
+    # @return [OpenStruct] the configuration object
     def config
       @config ||= OpenStruct.new(DEFAULT_CONFIG)
     end
 
+    # The Esi logger class instance
+    # @return [MyLoggerInstance|Logger] an instance of the logger class
     def logger
       @logger ||= Esi.config.logger || Logger.new(Esi.config.log_target).tap do |l|
         l.level = Logger.const_get(Esi.config.log_level.upcase)
       end
     end
 
+    # The Esi cache class instance
+    # @return [ActiveSupport::Cache::Store] an instance of cache
     def cache
       Esi.config.cache
     end
 
+    # The Esi Api version to interface with
+    # @return [Symbol] the esi api version
     def api_version
       @api_version || :latest
     end
 
+    # Generate an Esi url for a given path
+    # @param [String] path the path to generate an esi url for
+    # @param [Hash{Symbol => String|Fixnum}] params the params for the url query
+    # @return [String] the generated url
     def generate_url(path, params = {})
       url = url_for_path(path)
       uri = Addressable::URI.parse(url)
@@ -104,6 +128,8 @@ module Esi
       uri.to_s
     end
 
+    # The current Esi client
+    # @return [Esi::Client] the current client
     def client
       @client ||= Client.current
     end
@@ -116,40 +142,4 @@ module Esi
       [config.api_host, config.api_version, path].join('/')
     end
   end
-
-  class ApiError < OAuth2::Error
-    attr_reader :response, :key, :message, :type, :original_exception
-
-    def initialize(response, original_exception = nil)
-      super(response.original_response)
-
-      @response = response
-      @original_exception = original_exception
-      @code = response.original_response.status
-      @key = response.data[:key]
-      @message = response.data[:message].presence || response.data[:error] || original_exception.try(:message)
-      @type = response.data[:exceptionType]
-    end
-  end
-
-  class ApiRequestError < StandardError
-    attr_reader :original_exception
-
-    def initialize(original_exception)
-      @original_exception = original_exception
-      msg = "#{original_exception.class}: " \
-      "#{original_exception.try(:response).try(:status)}" \
-      ' - ' \
-      "#{original_exception.try(:message)}"
-      super(msg)
-    end
-  end
-
-  class ApiUnknownError < ApiError; end
-  class ApiBadRequestError < ApiError; end
-  class ApiRefreshTokenExpiredError < ApiError; end
-  class ApiInvalidAppClientKeysError < ApiError; end
-  class ApiNotFoundError < ApiError; end
-  class ApiForbiddenError < ApiError; end
-  class Error < StandardError; end
 end
