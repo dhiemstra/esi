@@ -1,5 +1,3 @@
-require 'recursive-open-struct'
-
 module Esi
   class Response
     extend Forwardable
@@ -11,7 +9,7 @@ module Esi
     def initialize(response, call=nil)
       @original_response = response
       @call = call
-      @data = normalize_results
+      @data = MultiJson.load(body || {}, symbolize_keys: true, object_class: OpenStruct) # rescue OpenStruct.new
     end
 
     def merge(other_response)
@@ -31,10 +29,6 @@ module Esi
       @cached_until ||= headers[:expires] ? Time.parse(headers[:expires]) : nil
     end
 
-    def response_json
-      @response_json ||= MultiJson.load(body, symbolize_keys: true) rescue {}
-    end
-
     def save
       return if call.nil?
       return if Esi.config.response_log_path.blank? || !Dir.exists?(Esi.config.response_log_path)
@@ -47,24 +41,6 @@ module Esi
 
     def method_missing(method, *args, &block)
       data.send(method, *args, &block)
-    end
-
-    private
-
-    def normalize_results
-      case response_json.class.to_s
-      when 'Hash'  then normalize_entry(response_json)
-      when 'Array' then response_json.map { |e| normalize_entry(e) }
-      else response_json
-      end
-    end
-
-    def normalize_entry(entry)
-      entry.is_a?(Hash) ? RecursiveOpenStruct.new(entry.transform_keys { |k| underscore(k).to_sym }, recurse_over_arrays: true) : entry
-    end
-
-    def underscore(str)
-      str.to_s.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase
     end
   end
 end
