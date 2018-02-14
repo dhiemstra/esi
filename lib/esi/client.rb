@@ -18,6 +18,31 @@ module Esi
       @oauth = init_oauth
     end
 
+    def self.current=(client)
+      Thread.current[:esi_client] = client
+    end
+
+    def self.current
+      Thread.current[:esi_client] ||= new
+    end
+
+    def self.switch_to_default
+      self.current = new
+    end
+
+    def switch_to
+      Esi::Client.current = self
+    end
+
+    def with_client
+      initial_client = Esi::Client.current
+      switch_to
+      yield if block_given?
+    ensure
+      initial_client.switch_to if initial_client
+      Esi::Client.switch_to_default unless initial_client
+    end
+
     def method_missing(name, *args, &block)
       klass = nil
       ActiveSupport::Notifications.instrument('esi.client.detect_call') do

@@ -105,7 +105,7 @@ module Esi
     end
 
     def client
-      @client ||= Client.new
+      @client ||= Client.current
     end
 
     private

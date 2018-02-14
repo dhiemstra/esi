@@ -1,8 +1,11 @@
 AllCops:
   Exclude:
-    - bin/
-    - pkg/
+    - bin/*
+    - pkg/*
   TargetRubyVersion: 2.3
+Metrics/BlockLength:
+  Exclude:
+    - test/*
 Metrics/ClassLength:
   Max: 300
 Metrics/LineLength:
