@@ -5,7 +5,7 @@ require "addressable/uri"
 require "active_support/notifications"
 
 module Esi
-  autoload :Version,     'esi/version'
+  autoload :VERSION,     'esi/version'
   autoload :AccessToken, 'esi/access_token'
   autoload :OAuth,       'esi/o_auth'
   autoload :Calls,       'esi/calls'
