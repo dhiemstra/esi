@@ -2,7 +2,10 @@ require "oauth2"
 require "forwardable"
 require "ostruct"
 require "addressable/uri"
+require "active_support/cache"
 require "active_support/notifications"
+require 'active_support/core_ext/string'
+require "active_support/core_ext/class/attribute"
 
 module Esi
   autoload :VERSION,     'esi/version'
@@ -70,12 +73,12 @@ module Esi
     timeout: 60,
     client_id: nil,
     client_secret: nil,
-    cache: nil,
+    cache: ActiveSupport::Cache::MemoryStore.new,
     scopes: SCOPES
   }
 
   class << self
-    attr_writer :api_version, :logger
+    attr_writer :api_version, :config, :logger, :cache
 
     def config
       @config ||= OpenStruct.new(DEFAULT_CONFIG)
@@ -88,7 +91,11 @@ module Esi
     end
 
     def cache
-      Esi.config.cache
+      if Esi.config.cache.nil?
+        @cache ||= ActiveSupport::Cache::NullStore.new
+      else
+        Esi.config.cache
+      end
     end
 
     def api_version
