@@ -1,3 +1,6 @@
+require 'active_support/core_ext/string'
+require 'set'
+
 module Esi
   class Client
     MAX_ATTEMPTS = 2
@@ -7,7 +10,7 @@ module Esi
 
     def initialize(token: nil, refresh_token: nil, expires_at: nil)
       @logger = Esi.logger
-      @token = token
+      @access_token = token
       @refresh_token = refresh_token
       @expires_at = expires_at
     end
@@ -15,16 +18,28 @@ module Esi
     def method_missing(name, *args, &block)
       klass = nil
       ActiveSupport::Notifications.instrument('esi.client.detect_call') do
-        class_name = name.to_s.split('_').map(&:capitalize).join
+        class_name = method_to_class_name name
         begin
           klass = Esi::Calls.const_get(class_name)
         rescue NameError
           super(name, *args, &block)
         end
       end
+      cached_response(klass, *args, &block)
+    end
 
-      call = klass.new(*args)
-      call.paginated? ? request_paginated(call, &block) : request(call, &block)
+    def method?(name)
+      begin
+        klass = Esi::Calls.const_get(method_to_class_name(name))
+      rescue NameError
+        return false
+      end
+      !klass.nil?
+    end
+
+    def plural_method?(name)
+      plural = name.to_s.pluralize.to_sym
+      method? plural
     end
 
     def log(message)
@@ -37,13 +52,30 @@ module Esi
 
     private
 
+    def make_call(call, &block)
+      call.paginated? ? request_paginated(call, &block) : request(call, &block)
+    end
+
+    def cached_response(klass, *args, &block)
+      call = klass.new(*args)
+      return make_call(call, &block) unless Esi.cache
+      cache_key = [klass.name, args].flatten.to_set.hash
+      Esi.cache.fetch(cache_key, expires_in: klass.cache_duration) do
+        make_call(call, &block)
+      end
+    end
+
+    def method_to_class_name(name)
+      name.dup.to_s.split('_').map(&:capitalize).join
+    end
+
     def oauth
       @oauth ||= OAuth.new(
-        access_token: @token,
+        access_token: @access_token,
         refresh_token: @refresh_token,
         expires_at: @expires_at,
         callback: -> (token, expires_at) {
-          @token = token
+          @access_token = token
           @expires_at = expires_at
           if refresh_callback.respond_to?(:call)
             refresh_callback.call(token, expires_at)

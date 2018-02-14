@@ -70,6 +70,7 @@ module Esi
     timeout: 60,
     client_id: nil,
     client_secret: nil,
+    cache: nil,
     scopes: SCOPES
   }
 
@@ -84,6 +85,10 @@ module Esi
       @logger ||= Esi.config.logger || Logger.new(Esi.config.log_target).tap do |l|
         l.level = Logger.const_get(Esi.config.log_level.upcase)
       end
+    end
+
+    def cache
+      Esi.config.cache
     end
 
     def api_version
