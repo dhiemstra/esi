@@ -4,7 +4,10 @@ require 'oauth2'
 require 'forwardable'
 require 'ostruct'
 require 'addressable/uri'
+require 'active_support/cache'
 require 'active_support/notifications'
+require 'active_support/core_ext/string'
+require 'active_support/core_ext/class/attribute'
 
 # The main Esi Module
 # @!attribute [w] api_version
@@ -84,12 +87,12 @@ module Esi
     timeout: 60,
     client_id: nil,
     client_secret: nil,
-    cache: nil,
+    cache: ActiveSupport::Cache::MemoryStore.new,
     scopes: SCOPES
   }.freeze
 
   class << self
-    attr_writer :api_version, :logger
+    attr_writer :api_version, :config, :logger, :cache
 
     # The Esi Configuration
     # @return [OpenStruct] the configuration object
@@ -108,7 +111,11 @@ module Esi
     # The Esi cache class instance
     # @return [ActiveSupport::Cache::Store] an instance of cache
     def cache
-      Esi.config.cache
+      if Esi.config.cache.nil?
+        @cache ||= ActiveSupport::Cache::NullStore.new
+      else
+        Esi.config.cache
+      end
     end
 
     # The Esi Api version to interface with

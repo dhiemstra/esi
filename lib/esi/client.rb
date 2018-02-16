@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/string'
-require 'set'
-
 module Esi
   # The Esi Client class
   # @!attribute [rw] refresh_callback
@@ -143,9 +140,7 @@ module Esi
 
     def cached_response(klass, *args, &block)
       call = klass.new(*args)
-      return make_call(call, &block) unless Esi.cache
-      cache_key = [klass.name, args].flatten.to_set.hash
-      Esi.cache.fetch(cache_key, expires_in: klass.cache_duration) do
+      Esi.cache.fetch(call.cache_key, expires_in: klass.cache_duration) do
         make_call(call, &block)
       end
     end

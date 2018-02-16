@@ -36,6 +36,14 @@ module Esi
 
       attr_accessor :path, :params
 
+      def name
+        @name ||= self.class.name.remove('Esi::Calls::').underscore.to_sym
+      end
+
+      def cache_key
+        @cache_key ||= ActiveSupport::Cache.expand_cache_key([name, params].flatten, :esi)
+      end
+
       def method
         @method ||= :get
       end
