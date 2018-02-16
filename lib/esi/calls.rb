@@ -34,6 +34,14 @@ module Esi
 
       attr_accessor :path, :params
 
+      def name
+        @name ||= self.class.name.remove('Esi::Calls::').underscore.to_sym
+      end
+
+      def cache_key
+        @cache_key ||= ActiveSupport::Cache.expand_cache_key([name, params].flatten, :esi)
+      end
+
       def method
         @method ||= :get
       end
@@ -495,18 +503,6 @@ module Esi
     class CorporationWallets < Base
       self.scope = 'esi-wallet.read_corporation_wallets.v1'
       self.cache_duration = 300
-    end
-
-    class Structures < Base
-      def initialize
-        @path = "/universe/structures"
-      end
-    end
-
-    class Structure < Base
-      def initialize(structure_id)
-        @path = "/universe/structures/#{structure_id}"
-      end
     end
 
     class Route < Base

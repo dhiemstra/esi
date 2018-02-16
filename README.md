@@ -57,8 +57,13 @@ Create a file `config/initializers/esi.rb` with the following options:
     # Set esi api version to dev
     Esi.config.api_version = :dev
 
-    # Save all responses in this folder
+    # Save all raw JSON responses in this folder
     Esi.config.response_log_path = Rails.root.join('tmp', 'esi')
 
-    # Enable Caching
+# Caching
+
+ESI will cache API requests that auto expire based on the `Expires-At` header returned by ESI. By default [`ActiveSupport::Cache::MemoryStore`](http://api.rubyonrails.org/classes/ActiveSupport/Cache/MemoryStore.html) is used. When using Rails you can configure ESI to use the cache configured in your app by setting the `cache` config variable.
+
     Esi.config.cache = Rails.cache
+
+To disable caching you can set this value to `nil`.
