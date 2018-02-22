@@ -7,8 +7,8 @@ require 'esi/version'
 Gem::Specification.new do |spec|
   spec.name          = 'esi'
   spec.version       = Esi::VERSION
-  spec.authors       = ['Danny Hiemstra']
-  spec.email         = ['dannyhiemstra@gmail.com']
+  spec.authors       = ['Danny Hiemstra', 'Aaron Allen']
+  spec.email         = ['dannyhiemstra@gmail.com', 'aaronmallen4@gmail.com']
 
   spec.summary       = 'EVE ESI API wrapper'
   spec.description   = 'EVE ESI API wrapper'
