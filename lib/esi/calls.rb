@@ -40,7 +40,7 @@ module Esi
 
       def cache_key
         @cache_key ||= begin
-          cache_args = [CACHE_NAMESPACE, path.gsub(%r[^\/], ''), params.sort].flatten
+          cache_args = [CACHE_NAMESPACE, path.gsub(%r{^\/}, ''), params.sort].flatten
           ActiveSupport::Cache.expand_cache_key(cache_args)
         end
       end
