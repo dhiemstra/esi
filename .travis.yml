@@ -1,5 +1,12 @@
 language: ruby
 rvm:
-  - 2.3.6
-  - 2.4.3
-  - 2.5.0
+- 2.3.6
+- 2.4.3
+- 2.5.0
+deploy:
+  provider: rubygems
+  on:
+    branch: master
+    tags: true
+  api_key:
+    secure: Hz3V/prv40/GfPCunFDb2QhRYoO8ogoYy9wbpcEUCe0id8kbt7DsQFd0ggITkEf9xS3qLdbspc/5Zz6UQBvTZf8HsoYyaJCwuJVdY2mzTHdfR4xwS2wbssgWsDuj00Z+m7kMjXeI4xHKDSxd9EImLaK7MLCm6EUmB7y9I/w8sUtMaWnU43pMpLadd4SibQtPi8raZCLL9HxSSByl1oA8REXaxTNFpKyR6bxsfXrrV3NwuvyBS1AlLue/F7ZzmKKzO6O+1mSpT+jHcAVLPn6WmCETOCNjCrjDc93l/m46uhdqki+KjH6t3SUXESjD5+s1KnBRUW+o0pMvhqlj9IH2fDYxab9XKUu7bc/zFoyjSqz4FrNA4GiiFwLhBVOkucRSB5mUjVqHnol3N7lKeNPwM5kXabPqT//IEsEKAnDNgGcXD9o267W0F4MKBtgrxzE497h6rokFZgFk2dlOuIeOU/8jd3tNqn6CbssOaA1cq0r9z+WUDYXwBNZ80m/XUfGzz4/PWvhouLVl8URghqbi/NL2C4gR8tBngByHuvvVvDOCOybSXCHAXOArdbqzlOljnVDPMIwjH3IQk5xgRM17R6rlYsp3MimvMrbKtTWNmuy3Ht8LV41aqmltNoz7Dy1WQQH8uWQRmDzXuXhg4LpKd7jk401dxF+SVMQn4ogoJRE=
