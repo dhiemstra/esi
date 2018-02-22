@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esi
   class AccessToken < OAuth2::AccessToken
     EXPIRES_MARGIN = 30.seconds
@@ -13,7 +15,7 @@ module Esi
     end
 
     def verify
-      Esi::Response.new(get("/oauth/verify"))
+      Esi::Response.new(get('/oauth/verify'))
     end
 
     def expired?
