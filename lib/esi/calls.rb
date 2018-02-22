@@ -31,13 +31,18 @@ module Esi
     end
 
     class Base
+      CACHE_NAMESPACE = 'esi'
+
       class_attribute :scope
       class_attribute :cache_duration
 
       attr_accessor :path, :params
 
       def cache_key
-        @cache_key ||= ActiveSupport::Cache.expand_cache_key([:esi, path[1..-1], params.sort].flatten)
+        @cache_key ||= begin
+          cache_args = [CACHE_NAMESPACE, path.gsub(/^\//, ''), params.sort].flatten
+          ActiveSupport::Cache.expand_cache_key(cache_args)
+        end
       end
 
       def method
