@@ -37,7 +37,7 @@ module Esi
       attr_accessor :path, :params
 
       def cache_key
-        @cache_key ||= ActiveSupport::Cache.expand_cache_key([path, params].flatten, :esi)
+        @cache_key ||= ActiveSupport::Cache.expand_cache_key([:esi, path[1..-1], params.sort].flatten)
       end
 
       def method
