@@ -2,6 +2,8 @@
 
 module Esi
   class AccessToken < OAuth2::AccessToken
+    EXPIRES_MARGIN = 30.seconds
+
     def initialize(*args)
       if args[0].is_a?(OAuth2::AccessToken)
         token = args[0]
@@ -14,6 +16,10 @@ module Esi
 
     def verify
       Esi::Response.new(get('/oauth/verify'))
+    end
+
+    def expired?
+      expires? && (expires_at < EXPIRES_MARGIN.ago.to_i)
     end
   end
 end

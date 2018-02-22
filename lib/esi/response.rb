@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'recursive-open-struct'
-
 module Esi
   class Response
     extend Forwardable
@@ -12,8 +10,8 @@ module Esi
 
     def initialize(response, call = nil)
       @original_response = response
+      @data = normalize_response_body
       @call = call
-      @data = normalize_results
     end
 
     def merge(other_response)
@@ -65,24 +63,8 @@ module Esi
 
     private
 
-    def normalize_results
-      case response_json.class.to_s
-      when 'Hash'  then normalize_entry(response_json)
-      when 'Array' then response_json.map { |e| normalize_entry(e) }
-      else response_json
-      end
-    end
-
-    def normalize_entry(entry)
-      entry.is_a?(Hash) ? hash_to_struct(entry) : entry
-    end
-
-    def hash_to_struct(hash)
-      RecursiveOpenStruct.new(hash.transform_keys { |k| underscore(k).to_sym }, recurse_over_arrays: true)
-    end
-
-    def underscore(str)
-      str.to_s.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
+    def normalize_response_body
+      MultiJson.load(body || {}, symbolize_keys: true, object_class: OpenStruct)
     end
   end
 end

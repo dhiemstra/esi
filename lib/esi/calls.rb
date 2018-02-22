@@ -31,17 +31,18 @@ module Esi
     end
 
     class Base
+      CACHE_NAMESPACE = 'esi'
+
       class_attribute :scope
       class_attribute :cache_duration
 
       attr_accessor :path, :params
 
-      def name
-        @name ||= self.class.name.remove('Esi::Calls::').underscore.to_sym
-      end
-
       def cache_key
-        @cache_key ||= ActiveSupport::Cache.expand_cache_key([name, params].flatten, :esi)
+        @cache_key ||= begin
+          cache_args = [CACHE_NAMESPACE, path.gsub(%r{^\/}, ''), params.sort].flatten
+          ActiveSupport::Cache.expand_cache_key(cache_args)
+        end
       end
 
       def method
