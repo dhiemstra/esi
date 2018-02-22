@@ -5,7 +5,7 @@ module Esi
     extend Forwardable
 
     attr_reader :access_token, :refresh_token, :expires_at
-    def_delegators :token, :get, :post, :delete, :patch, :put
+    def_delegators :token, :request, :get, :post, :delete, :patch, :put
 
     class << self
       def authorize_url(redirect_uri:, scopes: nil)
@@ -36,10 +36,6 @@ module Esi
       @callback = callback if callback
     end
 
-    def request(*args)
-      token.request(*args)
-    end
-
     private
 
     def token
@@ -50,8 +46,6 @@ module Esi
     end
 
     def refresh_access_token
-      Esi.logger.debug "Refreshing access token"
-
       ActiveSupport::Notifications.instrument('esi.oauth.refresh_token') do
         @token = @token.refresh!
         @access_token = @token.token
