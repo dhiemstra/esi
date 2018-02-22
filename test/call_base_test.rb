@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 Esi::Calls::MockCall = Class.new(Esi::Calls::Base) do
   def initialize
-    self.params = {id: 1234}
+    self.params = { id: 1234 }
   end
 end
 

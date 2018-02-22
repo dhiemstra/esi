@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'recursive-open-struct'
 
 module Esi
@@ -8,7 +10,7 @@ module Esi
     def_delegators :original_response, :status, :body, :headers
     def_delegators :data, :each
 
-    def initialize(response, call=nil)
+    def initialize(response, call = nil)
       @original_response = response
       @call = call
       @data = normalize_results
@@ -32,17 +34,29 @@ module Esi
     end
 
     def response_json
-      @response_json ||= MultiJson.load(body, symbolize_keys: true) rescue {}
+      @response_json ||= begin
+                           MultiJson.load(body, symbolize_keys: true)
+                         rescue StandardError
+                           {}
+                         end
     end
 
     def save
-      return if call.nil?
-      return if Esi.config.response_log_path.blank? || !Dir.exists?(Esi.config.response_log_path)
+      return unless should_log_response?
+      File.write(log_directroy.join("#{Time.now.to_i}.json"), to_json)
+    end
 
-      call_name = call.class.to_s.split('::').last.underscore
-      folder = Pathname.new(Esi.config.response_log_path).join(call_name)
-      FileUtils.mkdir_p(folder)
-      File.write(folder.join("#{Time.now.to_i.to_s}.json"), to_json)
+    def log_directory
+      call.class.to_s.split('::').last.underscore
+      dir = Pathname.new(Esi.config.response_log_path).join(call_name)
+      FileUtils.mkdir_p(dir)
+      dir
+    end
+
+    def should_log_response?
+      return false if call.nil?
+      return false if Esi.config.response_log_path.blank? || !Dir.exist?(Esi.config.response_log_path)
+      true
     end
 
     def method_missing(method, *args, &block)
@@ -60,11 +74,15 @@ module Esi
     end
 
     def normalize_entry(entry)
-      entry.is_a?(Hash) ? RecursiveOpenStruct.new(entry.transform_keys { |k| underscore(k).to_sym }, recurse_over_arrays: true) : entry
+      entry.is_a?(Hash) ? hash_to_struct(entry) : entry
+    end
+
+    def hash_to_struct(hash)
+      RecursiveOpenStruct.new(hash.transform_keys { |k| underscore(k).to_sym }, recurse_over_arrays: true)
     end
 
     def underscore(str)
-      str.to_s.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase
+      str.to_s.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
     end
   end
 end

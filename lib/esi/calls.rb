@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esi
   class Calls
     class << self
@@ -56,13 +58,13 @@ module Esi
       end
 
       def paginated?
-        !!@paginated
+        !@paginated
       end
     end
 
     class Regions < Base
       def initialize
-        @path = "/universe/regions/"
+        @path = '/universe/regions/'
       end
     end
 
@@ -74,7 +76,7 @@ module Esi
 
     class Constellations < Base
       def initialize
-        @path = "/universe/constellations/"
+        @path = '/universe/constellations/'
       end
     end
 
@@ -92,7 +94,7 @@ module Esi
 
     class SolarSystems < Base
       def initialize
-        @path = "/universe/systems/"
+        @path = '/universe/systems/'
       end
     end
 
@@ -128,7 +130,7 @@ module Esi
 
     class Structures < Base
       def initialize
-        @path = "/universe/structures/"
+        @path = '/universe/structures/'
       end
     end
 
@@ -140,7 +142,7 @@ module Esi
 
     class Types < Base
       def initialize
-        @path = "/universe/types"
+        @path = '/universe/types'
         @paginated = true
       end
     end
@@ -153,7 +155,7 @@ module Esi
 
     class DogmaAttributes < Base
       def initialize
-        @path = "/dogma/attributes/"
+        @path = '/dogma/attributes/'
       end
     end
 
@@ -165,7 +167,7 @@ module Esi
 
     class DogmaEffects < Base
       def initialize
-        @path = "/dogma/effects/"
+        @path = '/dogma/effects/'
       end
     end
 
@@ -180,7 +182,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize
-        @path = "/industry/facilities"
+        @path = '/industry/facilities'
       end
     end
 
@@ -189,7 +191,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize
-        @path = "/industry/systems"
+        @path = '/industry/systems'
       end
     end
 
@@ -198,7 +200,7 @@ module Esi
       # https://esi.tech.ccp.is/latest/characters/907452336/search/?categories=structure&datasource=tranquility&search=Kamela&strict=false&token=Fp3ThF7wjvYBIDIIrtWE_Ryjt9BhYwUP75y2EL5Eq9mHPm8tYt9I9NwgZz8o26FFQBKoUToh2DYVc-Q5Ws400g2
 
       def initialize(character_id: nil, categories:, search:, strict: false)
-        @path = (character_id ? "/characters/#{character_id}" : '') + "/search"
+        @path = (character_id ? "/characters/#{character_id}" : '') + '/search'
         @params = { categories: categories, search: search, strict: strict }
       end
     end
@@ -214,7 +216,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize(character_ids)
-        @path = "/characters/names"
+        @path = '/characters/names'
         @params = { character_ids: character_ids.join(',') }
       end
     end
@@ -416,7 +418,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize
-        @path = "/alliances"
+        @path = '/alliances'
       end
     end
 
@@ -424,7 +426,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize(alliance_ids)
-        @path = "/alliances/names"
+        @path = '/alliances/names'
         @params = { alliance_ids: alliance_ids.join(',') }
       end
     end
@@ -441,7 +443,7 @@ module Esi
       self.cache_duration = 3600
 
       def initialize(corporation_ids)
-        @path = "/corporations/names"
+        @path = '/corporations/names'
         @params = { corporation_ids: corporation_ids.join(',') }
       end
     end
@@ -530,7 +532,7 @@ module Esi
 
     class MarketGroups < Base
       def initialize
-        @path = "/markets/groups"
+        @path = '/markets/groups'
         @paginated = true
       end
     end
@@ -543,7 +545,7 @@ module Esi
 
     class MarketPrices < Base
       def initialize
-        @path = "/markets/prices"
+        @path = '/markets/prices'
       end
     end
 
@@ -609,7 +611,7 @@ module Esi
       self.scope = 'esi-ui.open_window.v1'
 
       def initialize(type_id)
-        @path = "/ui/openwindow/marketdetails"
+        @path = '/ui/openwindow/marketdetails'
         @method = :post
         @params = { type_id: type_id }
       end

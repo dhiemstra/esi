@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Esi
   class OAuth
     extend Forwardable
@@ -20,15 +22,13 @@ module Esi
       def client
         @client ||= OAuth2::Client.new(
           Esi.config.client_id, Esi.config.client_secret,
-          { site: Esi.config.oauth_host }
+          site: Esi.config.oauth_host
         )
       end
     end
 
     def initialize(access_token:, refresh_token:, expires_at:, callback: nil)
-      if callback && !callback.respond_to?(:call)
-        raise Esi::Error.new("Callback should be a callable Proc")
-      end
+      raise Esi::Error, 'Callback should be a callable Proc' if callback && !callback.respond_to?(:call)
 
       @access_token = access_token
       @refresh_token = refresh_token
@@ -39,9 +39,8 @@ module Esi
     private
 
     def token
-      @token = Esi::AccessToken.new(OAuth.client, @access_token, {
-        refresh_token: @refresh_token, expires_at: @expires_at
-      })
+      @token = Esi::AccessToken.new(OAuth.client, @access_token,
+                                    refresh_token: @refresh_token, expires_at: @expires_at)
       refresh_access_token if @token.expired?
       @token
     end
@@ -51,7 +50,7 @@ module Esi
         @token = @token.refresh!
         @access_token = @token.token
         @expires_at = @token.expires_at.integer? ? Time.at(@token.expires_at) : @token.expires_at
-        @callback.call(@access_token, @expires_at) if @callback
+        @callback&.call(@access_token, @expires_at)
       end
     end
   end
