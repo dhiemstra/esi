@@ -6,9 +6,14 @@ require 'esi/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'esi'
-  spec.version       = Esi::VERSION
   spec.authors       = ['Danny Hiemstra', 'Aaron Allen']
   spec.email         = ['dannyhiemstra@gmail.com', 'aaronmallen4@gmail.com']
+
+  # @note https://docs.travis-ci.com/user/deployment/rubygems/#Pre-releasing
+  # rubocop:disable Gemspec/DuplicatedAssignment
+  spec.version       = Esi::VERSION
+  spec.version       = "#{spec.version}-alpha-#{ENV['TRAVIS_BUILD_NUMBER']}" if ENV['TRAVIS']
+  # rubocop:enable Gemspec/DuplicatedAssignment
 
   spec.summary       = 'EVE ESI API wrapper'
   spec.description   = 'EVE ESI API wrapper'
