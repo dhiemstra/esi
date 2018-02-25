@@ -16,8 +16,8 @@ module Esi
     attr_reader :response, :key, :message, :type, :original_exception
 
     # Create a new instance of ApiError
-    # @param [Esi::Response] response the response that generated the exception
-    # @param [ExceptionClass|nil] the orginally raised exception
+    # @param response [Esi::Response] response the response that generated the exception
+    # @param original_exception [ExceptionClass|nil] the orginally raised exception
     # @return [Esi::ApiError] an instance of ApiError
     def initialize(response, original_exception = nil)
       super(response.original_response)
@@ -38,7 +38,7 @@ module Esi
     attr_reader :original_exception
 
     # Create a new instance of ApiRequestError
-    # @param [ExceptionClass|nil] the orginally raised exception
+    # @param original_exception [ExceptionClass|nil] the orginally raised exception
     # @return [Esi::ApiRequestError] the instance of ApiRequestError
     def initialize(original_exception)
       @original_exception = original_exception

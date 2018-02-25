@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Split `Calls` module into several smaller modules to improve maintainability
+
+### Fixed
+- Fixed Yard warnings
+
+### Added
+- Added more documentation
 
 ## [0.4.0] - 2018-02-16
 ### Fixed

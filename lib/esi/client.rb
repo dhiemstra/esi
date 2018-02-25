@@ -22,9 +22,9 @@ module Esi
     attr_reader :logger, :oauth
 
     # Create a new instance of Client
-    # @param [String] token the esi access_token
-    # @param [String] refresh_token the esi refresh_token
-    # @param [Time] expires_at the time stamp the esi token expires_at
+    # @param token [String] token the esi access_token
+    # @param refresh_token [String] refresh_token the esi refresh_token
+    # @param expires_at [Time] expires_at the time stamp the esi token expires_at
     def initialize(token: nil, refresh_token: nil, expires_at: nil)
       @logger = Esi.logger
       @access_token = token
@@ -33,21 +33,23 @@ module Esi
       @oauth = init_oauth
     end
 
-    # Set the current thread's Esi::Client
-    # @params [Esi::Client] the client to set
-    # @return [Esi::Client] the current thread's Esi::Client
+    # Set the current thread's `Esi::Client`
+    #
+    # @param client [Esi::Client] the client to set
+    #
+    # @return [Esi::Client] the current thread's `Esi::Client`
     def self.current=(client)
       Thread.current[:esi_client] = client
     end
 
-    # Get the current thread's Esi::Client
-    # @return [Esi::Client] the current thread's Esi::Client
+    # Get the current thread's `Esi::Client`
+    # @return [Esi::Client] the current thread's `Esi::Client`
     def self.current
       Thread.current[:esi_client] ||= new
     end
 
     # Switch to default Esi::Client (Esi::Client.new)
-    # @return [Esi::Client] the current thread's Esi::Client
+    # @return [Esi::Client] the current thread's `Esi::Client`
     def self.switch_to_default
       self.current = new
     end
@@ -80,9 +82,10 @@ module Esi
 
     # Intercept Esi::Client method_missing and attempt to call an Esi::Request
     #  with an Esi::Calls
-    # @param [Symbol|String] name the name of the method called
-    # @param [Array] *args the arguments to call the method with
-    # @param [#block] &block the block to pass to the underlying method
+    #
+    # @param name [Symbol|String] name the name of the method called
+    # @param args [Array] *args the arguments to call the method with
+    # @param block [#block] &block the block to pass to the underlying method
     # @raise [NameError] If the Esi::Calls does not exist
     # @return [Esi::Response] the response given for the call
     def method_missing(name, *args, &block)
@@ -180,8 +183,8 @@ module Esi
       end
     end
 
-    # FIXME: esi should not retry
-    # FIXME: make rubocop compliant
+    # @todo esi should not retry
+    # @todo make rubocop compliant
     # rubocop:disable Lint/ShadowedException
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/BlockLength
