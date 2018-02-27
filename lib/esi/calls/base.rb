@@ -40,12 +40,17 @@ module Esi
       def page=(page)
         params[:page] = page
       end
+
+      # @return [Integer] page number
+      def page
+        params[:page] || 1
       end
 
       # Returns whether the endpoint supports pagination
       # @return [Boolean]
       def paginated?
-        !@paginated
+        !!@paginated
+      end
 
       # @return [Hash] request params
       def params
