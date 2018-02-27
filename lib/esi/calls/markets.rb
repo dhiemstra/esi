@@ -3,6 +3,9 @@
 module Esi
   class Calls
     class StructureOrders < Base
+      self.scope = 'esi-markets.structure_markets.v1'
+      self.cache_duration = 300
+
       def initialize(structure_id:)
         @path = "/markets/structures/#{structure_id}"
         @paginated = true
