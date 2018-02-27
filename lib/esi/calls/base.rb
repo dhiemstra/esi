@@ -49,7 +49,7 @@ module Esi
       # Returns whether the endpoint supports pagination
       # @return [Boolean]
       def paginated?
-        !!@paginated
+        @paginated
       end
 
       # @return [Hash] request params
