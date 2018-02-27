@@ -1,18 +1,20 @@
 # frozen_string_literal: true
 
+require 'esi/calls/alliances'
 require 'esi/calls/base'
-require 'esi/calls/info'
-require 'esi/calls/universe'
-require 'esi/calls/dogma'
 require 'esi/calls/characters'
 require 'esi/calls/corporations'
-require 'esi/calls/alliances'
-require 'esi/calls/ui'
-require 'esi/calls/search'
-require 'esi/calls/route'
-require 'esi/calls/industry'
-require 'esi/calls/killmails'
+require 'esi/calls/dogma'
+require 'esi/calls/fittings'
 require 'esi/calls/fleets'
+require 'esi/calls/industry'
+require 'esi/calls/info'
+require 'esi/calls/killmails'
+require 'esi/calls/markets'
+require 'esi/calls/route'
+require 'esi/calls/search'
+require 'esi/calls/ui'
+require 'esi/calls/universe'
 
 module Esi
   class Calls
