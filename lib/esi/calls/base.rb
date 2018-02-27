@@ -12,7 +12,8 @@ module Esi
       class_attribute :scope
       class_attribute :cache_duration
 
-      attr_accessor :path, :params
+      attr_accessor :path
+      attr_writer :params
 
       # Returns an unique key based on the endpoint and params which is used for caching
       # @return [String] cache key
@@ -37,14 +38,18 @@ module Esi
 
       # @param page [Integer] page number
       def page=(page)
-        self.params ||= {}
-        self.params[:page] = page
+        params[:page] = page
+      end
       end
 
       # Returns whether the endpoint supports pagination
       # @return [Boolean]
       def paginated?
         !@paginated
+
+      # @return [Hash] request params
+      def params
+        @params || {}
       end
 
       private
@@ -53,7 +58,7 @@ module Esi
       # @return [Array] sorted array of params
       def sorted_params
         sorted = {}
-        (params || {}).each do |k, v|
+        params.each do |k, v|
           sorted[k] = v.respond_to?(:sort) ? v.sort : v
         end
         sorted.sort
