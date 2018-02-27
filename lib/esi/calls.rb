@@ -21,9 +21,8 @@ module Esi
       #
       # @return [Array<Symbol>] list of underscored call names
       def list
-        @list ||= constants
-                  .select { |c| Esi::Calls.const_get(c).try(:scope) }
-                  .map { |c| c.to_s.underscore.to_sym }
+        @list ||= constants.select { |c| Esi::Calls.const_get(c).try(:scope) }
+                           .map { |c| c.to_s.underscore.to_sym }
       end
     end
   end

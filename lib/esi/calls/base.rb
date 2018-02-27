@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'digest'
+
 module Esi
   class Calls
     # Base parent class used for all API calls. Provides basic functionality and state for caching
@@ -13,12 +15,11 @@ module Esi
       attr_accessor :path, :params
 
       # Returns an unique key based on the endpoint and params which is used for caching
-      #
       # @return [String] cache key
       def cache_key
         @cache_key ||= begin
-          cache_args = [CACHE_NAMESPACE, path.gsub(%r{^\/}, ''), params.sort].flatten
-          ActiveSupport::Cache.expand_cache_key(cache_args)
+          checksum = Digest::MD5.hexdigest("#{path.gsub(%r{^\/}, '')}:#{sorted_params}")
+          "#{CACHE_NAMESPACE}:#{checksum}"
         end
       end
 
@@ -44,6 +45,18 @@ module Esi
       # @return [Boolean]
       def paginated?
         !@paginated
+      end
+
+      private
+
+      # Transforms the params hash into a sorted array
+      # @return [Array] sorted array of params
+      def sorted_params
+        sorted = {}
+        params.each do |k, v|
+          sorted[k] = v.respond_to?(:sort) ? v.sort : v
+        end
+        sorted.sort
       end
     end
   end
