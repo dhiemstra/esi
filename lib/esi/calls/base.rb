@@ -53,7 +53,7 @@ module Esi
       # @return [Array] sorted array of params
       def sorted_params
         sorted = {}
-        params.each do |k, v|
+        (params || {}).each do |k, v|
           sorted[k] = v.respond_to?(:sort) ? v.sort : v
         end
         sorted.sort
