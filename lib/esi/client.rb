@@ -154,6 +154,7 @@ module Esi
       name.dup.to_s.split('_').map(&:capitalize).join
     end
 
+    # rubocop:disable Metrics/MethodLength
     def init_oauth
       @oauth ||= OAuth.new(
         access_token: @access_token,
@@ -167,6 +168,7 @@ module Esi
         }
       )
     end
+    # rubocop:enable Metrics/MethodLength
 
     def request_paginated(call, &block)
       call.page = 1

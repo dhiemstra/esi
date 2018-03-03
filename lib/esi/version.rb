@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Esi
-  VERSION = '0.4.13-alpa1'
+  VERSION = '0.4.13-alpa2'
 end

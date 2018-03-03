@@ -24,12 +24,11 @@ module Esi
       end
 
       # @return [OAuth2::Client] new oAuth2 client instance with specified options
-      def create_client(client_id: nil, client_secret: nil, site: nil)
+      def create_client(client_id: nil, client_secret: nil)
         client_id ||= Esi.config.client_id
         client_secret ||= Esi.config.client_secret
-        site ||= Esi.config.oauth_host
 
-        OAuth2::Client.new(client_id, client_secret, site: site)
+        OAuth2::Client.new(client_id, client_secret, site: Esi.config.oauth_host)
       end
     end
 
