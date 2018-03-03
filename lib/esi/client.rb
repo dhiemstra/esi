@@ -25,11 +25,13 @@ module Esi
     # @param token [String] token the esi access_token
     # @param refresh_token [String] refresh_token the esi refresh_token
     # @param expires_at [Time] expires_at the time stamp the esi token expires_at
-    def initialize(token: nil, refresh_token: nil, expires_at: nil)
+    # @param oauth_client [OAuth2::Client] Custom instance of OAuth2::Client
+    def initialize(token: nil, refresh_token: nil, expires_at: nil, oauth_client: nil)
       @logger = Esi.logger
       @access_token = token
       @refresh_token = refresh_token
       @expires_at = expires_at
+      @oauth_client = oauth_client
       @oauth = init_oauth
     end
 
@@ -157,6 +159,7 @@ module Esi
         access_token: @access_token,
         refresh_token: @refresh_token,
         expires_at: @expires_at,
+        client: @oauth_client,
         callback: lambda { |token, expires_at|
           @access_token = token
           @expires_at = expires_at
