@@ -98,5 +98,14 @@ module Esi
       self.scope = 'esi-wallet.read_corporation_wallets.v1'
       self.cache_duration = 300
     end
+
+    class CorporationWalletJournal < Base
+      self.scope = 'esi-wallet.read_corporation_wallets.v1'
+      self.cache_duration = 3600
+
+      def initialize(corporation_id, division)
+        @path = "/corporations/#{corporation_id}/wallet/#{division}/journal"
+      end
+    end
   end
 end

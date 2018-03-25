@@ -31,14 +31,6 @@ module Esi
       @cached_until ||= headers[:expires] ? Time.parse(headers[:expires]) : nil
     end
 
-    def response_json
-      @response_json ||= begin
-                           MultiJson.load(body, symbolize_keys: true)
-                         rescue StandardError
-                           {}
-                         end
-    end
-
     def save
       return unless should_log_response?
       File.write(log_directroy.join("#{Time.now.to_i}.json"), to_json)
