@@ -153,7 +153,7 @@ module Esi
     end
 
     def init_oauth
-      @oauth ||= OAuth.new(
+      OAuth.new(
         access_token: @access_token,
         refresh_token: @refresh_token,
         expires_at: @expires_at,

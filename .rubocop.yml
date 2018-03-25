@@ -16,6 +16,8 @@ Style/Documentation:
   Enabled: false # TODO: renable this after documenting.
 Style/MethodMissing:
   Enabled: false
+Style/ExpandPathArguments:
+  Enabled: false
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:
     default: '()'
