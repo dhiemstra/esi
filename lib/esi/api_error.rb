@@ -89,6 +89,19 @@ module Esi
   #  @return [ExceptionClass|nil] the orginal raised exception
   class RateLimitError < ApiError; end
 
+  # UnauthorizedError Class
+  # @!attribute [r] response
+  #  @return [Esi::Response] the ApiError Response
+  # @!attribute [r] key
+  #  @return [String] the response.data[:key]
+  # @!attribute [r] message
+  #  @return [String] the response error message
+  # @!attribute [r] type
+  #  @return [String] the response.data[:exceptionType]
+  # @!attribute [r] original_exception
+  #  @return [ExceptionClass|nil] the orginal raised exception
+  class UnauthorizedError < ApiError; end
+
   # ApiUnknowntError Class
   # @!attribute [r] response
   #  @return [Esi::Response] the ApiError Response

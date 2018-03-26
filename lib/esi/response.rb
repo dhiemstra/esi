@@ -56,7 +56,7 @@ module Esi
     private
 
     def normalize_response_body
-      MultiJson.load(body || {}, symbolize_keys: true, object_class: OpenStruct)
+      MultiJson.load(body.presence || '{}', symbolize_keys: true, object_class: OpenStruct)
     end
   end
 end

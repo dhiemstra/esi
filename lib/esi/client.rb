@@ -167,11 +167,7 @@ module Esi
 
     def request_paginated(call, &block)
       call.page = 1
-      response = nil
-      ActiveSupport::Notifications.instrument('esi.client.request.paginated') do
-        response = paginated_response(response, call, &block)
-      end
-      response
+      paginated_response(response, call, &block)
     end
 
     def paginated_response(response, call, &block)
@@ -188,13 +184,18 @@ module Esi
     # rubocop:disable Metrics/AbcSize
     def request(call, &block)
       response = Timeout.timeout(Esi.config.timeout) do
-        oauth.request(call.method, url || call.url, timeout: Esi.config.timeout)
+        oauth.request(call.method, call.url, timeout: Esi.config.timeout)
       end
       response = Response.new(response, call)
       response.data.each { |item| yield(item) } if block
       response.save
     rescue OAuth2::Error => e
       exception = error_class_for(e.response.status).new(Response.new(e.response, call), e)
+      if exception.is_a?(Esi::ApiUnknownError)
+        puts e.inspect
+        puts e.response.inspect
+        puts e.response.body.inspect
+      end
       raise exception.is_a?(Esi::ApiBadRequestError) ? process_bad_request_error(exception) : exception
     rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error => e
       raise Esi::TimeoutError.new(Response.new(e.response, call), exception)
@@ -202,13 +203,14 @@ module Esi
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
 
-    def error_class_for(exception)
-      case exception.response.status
+    def error_class_for(status)
+      case status
+      when 400 then Esi::ApiBadRequestError
+      when 401 then Esi::UnauthorizedError
+      when 403 then Esi::ApiForbiddenError
+      when 404 then Esi::ApiNotFoundError
       when 502 then Esi::TemporaryServerError
       when 503 then Esi::RateLimitError
-      when 404 then Esi::ApiNotFoundError
-      when 403 then Esi::ApiForbiddenError
-      when 400 then Esi::ApiBadRequestError
       else Esi::ApiUnknownError
       end
     end
