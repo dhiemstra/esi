@@ -180,7 +180,6 @@ module Esi
     end
 
     # @todo make rubocop compliant
-    # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/AbcSize
     def request(call, &block)
       response = Timeout.timeout(Esi.config.timeout) do
@@ -195,7 +194,6 @@ module Esi
     rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error => e
       raise Esi::TimeoutError.new(Response.new(e.response, call), exception)
     end
-    # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
 
     def error_class_for(status)

@@ -12,6 +12,12 @@ Metrics/LineLength:
   Max: 120
 Metrics/ModuleLength:
   Max: 300
+Metrics/MethodLength:
+  Max: 20
+Metrics/Cycle:
+  Max: 20
+Metrics/CyclomaticComplexity:
+  Enabled: false
 Style/Documentation:
   Enabled: false # TODO: renable this after documenting.
 Style/MethodMissing:
