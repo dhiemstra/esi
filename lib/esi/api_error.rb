@@ -50,6 +50,45 @@ module Esi
     end
   end
 
+  # TimeoutError Class
+  # @!attribute [r] response
+  #  @return [Esi::Response] the ApiError Response
+  # @!attribute [r] key
+  #  @return [String] the response.data[:key]
+  # @!attribute [r] message
+  #  @return [String] the response error message
+  # @!attribute [r] type
+  #  @return [String] the response.data[:exceptionType]
+  # @!attribute [r] original_exception
+  #  @return [ExceptionClass|nil] the orginal raised exception
+  class TimeoutError < ApiError; end
+
+  # TemporaryServerError Class
+  # @!attribute [r] response
+  #  @return [Esi::Response] the ApiError Response
+  # @!attribute [r] key
+  #  @return [String] the response.data[:key]
+  # @!attribute [r] message
+  #  @return [String] the response error message
+  # @!attribute [r] type
+  #  @return [String] the response.data[:exceptionType]
+  # @!attribute [r] original_exception
+  #  @return [ExceptionClass|nil] the orginal raised exception
+  class TemporaryServerError < ApiError; end
+
+  # RateLimitError Class
+  # @!attribute [r] response
+  #  @return [Esi::Response] the ApiError Response
+  # @!attribute [r] key
+  #  @return [String] the response.data[:key]
+  # @!attribute [r] message
+  #  @return [String] the response error message
+  # @!attribute [r] type
+  #  @return [String] the response.data[:exceptionType]
+  # @!attribute [r] original_exception
+  #  @return [ExceptionClass|nil] the orginal raised exception
+  class RateLimitError < ApiError; end
+
   # ApiUnknowntError Class
   # @!attribute [r] response
   #  @return [Esi::Response] the ApiError Response

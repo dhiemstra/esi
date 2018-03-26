@@ -64,7 +64,7 @@ module Esi
     #  previous client or default client
     #
     # @example Call an Esi::Client method using an instance of client
-    #  new_client = Esi::Client.new(token: 'foo', refresh_token: 'foo', expires_at: 30.minutes.from_now)
+    #  new_client = Esi::Client.new(token: 'foo', refresh_token: 'foo', exceptionxpires_at: 30.minutes.from_now)
     #  new_client.with_client do |client|
     #    client.character(1234)
     #  end
@@ -143,7 +143,7 @@ module Esi
 
     def cached_response(klass, *args, &block)
       call = klass.new(*args)
-      Esi.cache.fetch(call.cache_key, expires_in: klass.cache_duration) do
+      Esi.cache.fetch(call.cache_key, exceptionxpires_in: klass.cache_duration) do
         make_call(call, &block)
       end
     end
@@ -157,10 +157,10 @@ module Esi
         access_token: @access_token,
         refresh_token: @refresh_token,
         expires_at: @expires_at,
-        callback: lambda { |token, expires_at|
+        callback: lambda { |token, exceptionxpires_at|
           @access_token = token
           @expires_at = expires_at
-          refresh_callback.call(token, expires_at) if refresh_callback.respond_to?(:call)
+          refresh_callback.call(token, exceptionxpires_at) if refresh_callback.respond_to?(:call)
         }
       )
     end
@@ -183,114 +183,42 @@ module Esi
       end
     end
 
-    # @todo esi should not retry
     # @todo make rubocop compliant
-    # rubocop:disable Lint/ShadowedException
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/BlockLength
-    # rubocop:disable Metrics/CyclomaticComplexity
     # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/PerceivedComplexity
+    # rubocop:disable Metrics/AbcSize
     def request(call, &block)
-      response = nil
-      last_ex = nil
-      options = { timeout: Esi.config.timeout }
-      url ||= call.url
-
-      debug "Starting request: #{url}"
-
-      ActiveSupport::Notifications.instrument('esi.client.request') do
-        1.upto(MAX_ATTEMPTS) do |_try|
-          last_ex = nil
-          response = nil
-
-          begin
-            response = Timeout.timeout(Esi.config.timeout) do
-              oauth.request(call.method, url, options)
-            end
-          rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error, Net::ReadTimeout => e
-            last_ex = e
-            logger.error e.to_s
-            sleep 3
-            next
-          rescue OAuth2::Error => e
-            last_ex = e
-            response = Response.new(e.response, call)
-
-            case e.response.status
-            when 502 # Temporary server error
-              logger.error "TemporaryServerError: #{response.error}"
-              sleep 5
-              next
-            when 503 # Rate Limit
-              logger.error 'RateLimit error, sleeping for 5 seconds'
-              sleep 5
-              next
-            when 404 # Not Found
-              raise Esi::ApiNotFoundError.new(Response.new(e.response, call), e)
-            when 403 # Forbidden
-              debug_error('ApiForbiddenError', url, response)
-              raise Esi::ApiForbiddenError.new(response, e)
-            when 400 # Bad Request
-              exception = Esi::ApiBadRequestError.new(response, e)
-              case exception.message
-              when 'invalid_token'
-                debug_error('ApiRefreshTokenExpiredError ', url, response)
-                raise Esi::ApiRefreshTokenExpiredError.new(response, e)
-              when 'invalid_client'
-                debug_error('ApiInvalidAppClientKeysError', url, response)
-                raise Esi::ApiInvalidAppClientKeysError.new(response, e)
-              else
-                debug_error('ApiBadRequestError', url, response)
-                raise exception
-              end
-            else
-              debug_error('ApiUnknownError', url, response)
-              raise Esi::ApiUnknownError.new(response, e)
-            end
-          end
-
-          break if response
-        end
+      response = Timeout.timeout(Esi.config.timeout) do
+        oauth.request(call.method, url || call.url, timeout: Esi.config.timeout)
       end
-      # rubocop:enable Lint/ShadowedException
-      # rubocop:enable Metrics/AbcSize
-      # rubocop:enable Metrics/BlockLength
-      # rubocop:enable Metrics/CyclomaticComplexity
-      # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/PerceivedComplexity
+      response = Response.new(response, call)
+      response.data.each { |item| yield(item) } if block
+      response.save
+    rescue OAuth2::Error => e
+      exception = error_class_for(e.response.status).new(Response.new(e.response, call), e)
+      raise exception.is_a?(Esi::ApiBadRequestError) ? process_bad_request_error(exception) : exception
+    rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error => e
+      raise Esi::TimeoutError.new(Response.new(e.response, call), exception)
+    end
+    # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
 
-      if last_ex
-        logger.error "Request failed with #{last_ex.class}"
-        debug_error(last_ex.class, url, response)
-        raise Esi::ApiRequestError, last_ex
+    def error_class_for(exception)
+      case exception.response.status
+      when 502 then Esi::TemporaryServerError
+      when 503 then Esi::RateLimitError
+      when 404 then Esi::ApiNotFoundError
+      when 403 then Esi::ApiForbiddenError
+      when 400 then Esi::ApiBadRequestError
+      else Esi::ApiUnknownError
       end
-
-      debug 'Request successful'
-
-      ActiveSupport::Notifications.instrument('esi.client.response.render') do
-        response = Response.new(response, call)
-        response.save
-      end
-      ActiveSupport::Notifications.instrument('esi.client.response.callback') do
-        response.data.each { |item| yield(item) } if block
-      end
-      response
     end
 
-    def debug_error(klass, url, response)
-      [
-        '-' * 60,
-        "#{klass}(#{response.error})",
-        "STATUS: #{response.status}",
-        "MESSAGE: #{debug_message_for_response(response)}",
-        "URL: #{url}",
-        '-' * 60
-      ].each { |msg| logger.error(msg) }
-    end
-
-    def debug_message_for_response(response)
-      response.respond_to?(:data) ? (response.data[:message].presence || response.data[:error]) : response.try(:body)
+    def process_bad_request_error(exception)
+      case exception.message
+      when 'invalid_token'  then Esi::ApiRefreshTokenExpiredError.new(response, exception)
+      when 'invalid_client' then Esi::ApiInvalidAppClientKeysError.new(response, exception)
+      else exception
+      end
     end
   end
 end

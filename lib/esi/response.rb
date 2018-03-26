@@ -32,8 +32,8 @@ module Esi
     end
 
     def save
-      return unless should_log_response?
-      File.write(log_directroy.join("#{Time.now.to_i}.json"), to_json)
+      File.write(log_directroy.join("#{Time.now.to_i}.json"), to_json) if should_log_response?
+      self
     end
 
     def log_directory
