@@ -191,11 +191,6 @@ module Esi
       response.save
     rescue OAuth2::Error => e
       exception = error_class_for(e.response.status).new(Response.new(e.response, call), e)
-      if exception.is_a?(Esi::ApiUnknownError)
-        puts e.inspect
-        puts e.response.inspect
-        puts e.response.body.inspect
-      end
       raise exception.is_a?(Esi::ApiBadRequestError) ? process_bad_request_error(exception) : exception
     rescue Faraday::SSLError, Faraday::ConnectionFailed, Timeout::Error => e
       raise Esi::TimeoutError.new(Response.new(e.response, call), exception)
