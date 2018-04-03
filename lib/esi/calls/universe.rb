@@ -38,6 +38,18 @@ module Esi
       end
     end
 
+    class SystemKills < Base
+      def initialize
+        @path = '/universe/system_kills/'
+      end
+    end
+
+    class SystemJumps < Base
+      def initialize
+        @path = '/universe/system_jumps/'
+      end
+    end
+
     class Star < Base
       def initialize(star_id)
         @path = "/universe/stars/#{star_id}"
