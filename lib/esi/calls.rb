@@ -14,6 +14,7 @@ require 'esi/calls/killmails'
 require 'esi/calls/markets'
 require 'esi/calls/route'
 require 'esi/calls/search'
+require 'esi/calls/sovereignty'
 require 'esi/calls/ui'
 require 'esi/calls/universe'
 
