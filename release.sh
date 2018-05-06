@@ -13,6 +13,7 @@ fi
 if ! grep -q $VERSION "$VERSIONFILE"; then
   echo "VERSION is not properly set in '${VERSIONFILE}'"
   echo "Changing it for you.."
+  echo
   sed -i "s/VERSION = .*/VERSION = '${VERSION}'/" "$VERSIONFILE"
 fi
 
