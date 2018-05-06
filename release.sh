@@ -19,4 +19,5 @@ fi
 
 git commit -am "Release v${VERSION}"
 git tag "v${VERSION}" -a -m "Release v${VERSION}"
+git pull origin master
 git push origin master --follow-tags
