@@ -3,7 +3,7 @@
 set -e
 
 VERSION="$1"
-VERSIONFILE="./lib/eve_app/version.rb"
+VERSIONFILE="./lib/esi/version.rb"
 
 if [ -z "$VERSION" ]; then
   echo "Usage: ./release.sh VERSION"
