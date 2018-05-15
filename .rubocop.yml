@@ -2,7 +2,7 @@ AllCops:
   Exclude:
     - bin/*
     - pkg/*
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.4
 Metrics/BlockLength:
   Exclude:
     - test/*
