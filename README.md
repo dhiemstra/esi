@@ -1,6 +1,8 @@
 # Esi
 [![Gem Version](https://badge.fury.io/rb/esi.svg)](https://badge.fury.io/rb/esi)
 [![TravisCI build status](https://travis-ci.org/dhiemstra/esi.svg?branch=master)](https://travis-ci.org/dhiemstra/esi)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ea56ec4e1a9933642005/maintainability)](https://codeclimate.com/github/dhiemstra/esi/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ea56ec4e1a9933642005/test_coverage)](https://codeclimate.com/github/dhiemstra/esi/test_coverage)
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/esi`. To experiment with that code, run `bin/console` for an interactive prompt.
 
