@@ -19,7 +19,6 @@ module Esi
       end
     end
 
-    # Cache: 2 minutes
     class CharacterWallet < Base
       self.scope = 'esi-wallet.read_character_wallet.v1'
       self.cache_duration = 120
@@ -120,15 +119,6 @@ module Esi
 
       def initialize(character_id, contract_id)
         @path = "/characters/#{character_id}/contracts/#{contract_id}/items"
-      end
-    end
-
-    class CharacterLocation < Base
-      self.scope = 'esi-location.read_location.v1'
-      self.cache_duration = 5
-
-      def initialize(character_id)
-        @path = "/characters/#{character_id}/location"
       end
     end
 
