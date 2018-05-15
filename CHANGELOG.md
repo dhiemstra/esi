@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.22]
+### Added
+- Rails generators
+
 ## [0.4.21]
 ### Added
 - Add character active ship
@@ -226,7 +230,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - lib/esi.rb
 - lib/esi/version.rb
 
-[Unreleased]: https://github.com/dhiemstra/esi/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/dhiemstra/esi/compare/v0.4.22...HEAD
+[0.4.22]: https://github.com/dhiemstra/esi/compare/v0.4.0...v0.4.22
 [0.4.0]: https://github.com/dhiemstra/esi/compare/v0.3.6...v0.4.0
 [0.3.6]: https://github.com/dhiemstra/esi/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/dhiemstra/esi/compare/v0.2.34...v0.3.5

@@ -21,10 +21,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport'
   spec.add_dependency 'addressable', '~> 2.3'
   spec.add_dependency 'oauth2', '~> 1.4'
+  spec.add_dependency 'railties', '~> 5.1'
   spec.add_development_dependency 'bundler', '~> 1.14'
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rubocop', '~> 0.52'
   spec.add_development_dependency 'shoulda', '~> 3.5'
+  spec.add_development_dependency 'simplecov', '~> 0.16'
   spec.add_development_dependency 'yard', '~> 0.9'
 end
