@@ -41,26 +41,12 @@ Add your client id and secret in an initializer or so.
     Esi.config.client_id = 'APP_CLIENT_ID'
     Esi.config.client_secret = 'APP_CLIENT_SECRET'
 
-## Configuration
+## Configuration in Rails
 
-Create a file `config/initializers/esi.rb` with the following options:
+Install the initializer with `rails generator esi:install` and modify
+`config/initializers/esi.rb`.
 
-    # Specify a custom log level
-    Esi.config.log_level = :debug
-
-    # Specify a custom log path
-    Esi.config.log_target = Rails.root.join('log', 'esi.log')
-
-    # Specify a custom logger
-    Esi.config.logger = Rails.logger
-
-    # Set esi api version to dev
-    Esi.config.api_version = :dev
-
-    # Save all raw JSON responses in this folder
-    Esi.config.response_log_path = Rails.root.join('tmp', 'esi')
-
-# Caching
+### Caching
 
 ESI will cache API requests that auto expire based on the `Expires-At` header returned by ESI. By default [`ActiveSupport::Cache::MemoryStore`](http://api.rubyonrails.org/classes/ActiveSupport/Cache/MemoryStore.html) is used. When using Rails you can configure ESI to use the cache configured in your app by setting the `cache` config variable.
 
